@@ -82,38 +82,76 @@
 
     // ======== CONSTANTES ASTRONÔMICAS CALIBRADAS =========
     const DEG = Math.PI / 180;
-    const YEAR_D = 365.25636;    // Ano sideral terrestre
-    const MOON_D = 27.321661;    // Mês sideral lunar
+    const TAU = Math.PI * 2;
+    const YEAR_D = 365.25636;       // Ano sideral terrestre
+    const MOON_SIDEREAL_D = 27.321661;
 
-    // Planetas - elementos orbitais calibrados (NASA/JPL)
+    // Elementos orbitais aproximados referidos ao J2000,
+    // com taxas lineares por século juliano.
+    // Baseados nas aproximações de baixa precisão da NASA/JPL,
+    // adequadas para visualização astronômica em escala didática.
     const PLANETS = {
-      Mercury: { 
-        T: 87.96926, a: 0.387098, e: 0.205635, 
-        i: 7.004*DEG, O: 48.331*DEG, w: 29.125*DEG,
-        color: 0x8c7853, R: 0.008
+      Mercury: {
+        color: 0x8c7853, R: 0.008,
+        elements: {
+          a: [0.38709927, 0.00000037],
+          e: [0.20563593, 0.00001906],
+          I: [7.00497902, -0.00594749],
+          L: [252.25032350, 149472.67411175],
+          longPeri: [77.45779628, 0.16047689],
+          longNode: [48.33076593, -0.12534081]
+        }
       },
-      Venus: { 
-        T: 224.7008, a: 0.723332, e: 0.006772, 
-        i: 3.394*DEG, O: 76.680*DEG, w: 54.884*DEG,
-        color: 0xe6cfb5, R: 0.019
+      Venus: {
+        color: 0xe6cfb5, R: 0.019,
+        elements: {
+          a: [0.72333566, 0.00000390],
+          e: [0.00677672, -0.00004107],
+          I: [3.39467605, -0.00078890],
+          L: [181.97909950, 58517.81538729],
+          longPeri: [131.60246718, 0.00268329],
+          longNode: [76.67984255, -0.27769418]
+        }
       },
-      Earth: { 
-        T: YEAR_D, a: 1.000001, e: 0.016709, 
-        i: 0*DEG, O: 0*DEG, w: 102.937*DEG,
-        color: 0x2a5d9e, R: 0.02
+      Earth: {
+        color: 0x2a5d9e, R: 0.02,
+        elements: {
+          a: [1.00000261, 0.00000562],
+          e: [0.01671123, -0.00004392],
+          I: [-0.00001531, -0.01294668],
+          L: [100.46457166, 35999.37244981],
+          longPeri: [102.93768193, 0.32327364],
+          longNode: [0.0, 0.0]
+        }
       },
-      Mars: { 
-        T: 686.98, a: 1.523662, e: 0.093412, 
-        i: 1.850*DEG, O: 49.578*DEG, w: 286.502*DEG,
-        color: 0xcd5c5c, R: 0.011
+      Mars: {
+        color: 0xcd5c5c, R: 0.011,
+        elements: {
+          a: [1.52371034, 0.00001847],
+          e: [0.09339410, 0.00007882],
+          I: [1.84969142, -0.00813131],
+          L: [-4.55343205, 19140.30268499],
+          longPeri: [-23.94362959, 0.44441088],
+          longNode: [49.55953891, -0.29257343]
+        }
       }
     };
 
     // ======== ÉPOCA E CALENDÁRIO =========
     const J2000 = Date.UTC(2000, 0, 1, 12, 0, 0);
+    const JD_J2000 = 2451545.0;
     const MS_PER_DAY = 86400000;
+
     function daysSinceEpoch(ms){ return (ms - J2000)/MS_PER_DAY; }
     function isoDateFromDays(d){ return new Date(J2000 + d*MS_PER_DAY); }
+    function julianDayFromSimDays(d){ return JD_J2000 + d; }
+    function centuriesSinceJ2000(d){ return (julianDayFromSimDays(d) - JD_J2000) / 36525; }
+    function normalizeDeg(angle){ return ((angle % 360) + 360) % 360; }
+    function normalizeRad(angle){
+      let v = angle % TAU;
+      if(v < 0) v += TAU;
+      return v;
+    }
 
     // ======== ESCALAS CALIBRADAS =========
     const R_SUN = 0.065;
@@ -239,9 +277,12 @@
       let mesh;
 
       if(name === 'Earth'){
-        // Terra com detalhes especiais
-        const tilt = 23.44 * DEG;
-        group.rotation.z = tilt;
+        // A inclinação axial deve afetar somente a rotação do planeta,
+        // não o plano orbital heliocêntrico.
+        const spinGroup = new THREE.Group();
+        spinGroup.rotation.z = 23.439281 * DEG;
+        group.userData.spinGroup = spinGroup;
+        group.add(spinGroup);
 
         const earthMat = new THREE.MeshPhongMaterial({
           map: earthColor,
@@ -276,9 +317,9 @@
           })
         );
 
-        group.add(earthMesh);
-        group.add(clouds);
-        group.add(atmosphere);
+        spinGroup.add(earthMesh);
+        spinGroup.add(clouds);
+        spinGroup.add(atmosphere);
         mesh = earthMesh;
         group.userData.clouds = clouds;
 
@@ -306,47 +347,8 @@
       label.position.set(0, p.R + 0.025, 0);
       scene.add(group);
 
-      // Linha de órbita
-      const orbitPoints = [];
-      const steps = 400;
-      
-      for(let i = 0; i <= steps; i++){
-        const M = (2 * Math.PI * i) / steps;
-        const E = keplerSolveE(M, p.e);
-        const r = p.a * (1 - p.e * Math.cos(E));
-        const nu = Math.atan2(
-          Math.sqrt(1 - p.e*p.e) * Math.sin(E),
-          Math.cos(E) - p.e
-        );
-        
-        const x = r * Math.cos(nu);
-        const y = r * Math.sin(nu);
-        
-        // Transformações orbitais
-        const cosw = Math.cos(p.w), sinw = Math.sin(p.w);
-        const cosO = Math.cos(p.O), sinO = Math.sin(p.O);
-        const cosi = Math.cos(p.i), sini = Math.sin(p.i);
-        
-        const x1 = x*cosw - y*sinw;
-        const y1 = x*sinw + y*cosw;
-        const z1 = 0;
-        
-        const x2 = x1;
-        const y2 = y1*cosi - z1*sini;
-        const z2 = y1*sini + z1*cosi;
-        
-        const X = x2*cosO - y2*sinO;
-        const Y = x2*sinO + y2*cosO;
-        const Z = z2;
-        
-        orbitPoints.push(X, Y, Z);
-      }
-
+      // Linha de órbita atualizada a partir dos elementos do instante
       const orbitGeometry = new THREE.BufferGeometry();
-      orbitGeometry.setAttribute('position', 
-        new THREE.Float32BufferAttribute(orbitPoints, 3)
-      );
-      
       const orbitLine = new THREE.Line(
         orbitGeometry,
         new THREE.LineBasicMaterial({
@@ -359,6 +361,7 @@
       scene.add(orbitLine);
 
       planetObjs[name] = { group, mesh, label, orbitLine };
+      updatePlanetOrbitLine(name, 0);
     }
 
     // Criar todos os planetas
@@ -384,21 +387,17 @@
     moonGroup.add(labelMoon);
     labelMoon.position.set(0, R_MOON + 0.018, 0);
 
-    // Guia de órbita lunar
-    const moonOrbitGeom = new THREE.RingGeometry(
-      MOON_DISTANCE * 0.995,
-      MOON_DISTANCE * 1.005,
-      128
+    // Guia da órbita lunar (recalculado dinamicamente em torno da Terra)
+    const moonOrbitGeometry = new THREE.BufferGeometry();
+    const moonOrbitGuide = new THREE.Line(
+      moonOrbitGeometry,
+      new THREE.LineBasicMaterial({
+        color: 0xffffff,
+        transparent: true,
+        opacity: 0.28
+      })
     );
-    const moonOrbitMat = new THREE.MeshBasicMaterial({
-      color: 0xffffff,
-      transparent: true,
-      opacity: 0.3,
-      side: THREE.DoubleSide
-    });
-    const moonOrbitGuide = new THREE.Mesh(moonOrbitGeom, moonOrbitMat);
-    moonOrbitGuide.rotation.x = Math.PI/2;
-    planetObjs.Earth.group.add(moonOrbitGuide);
+    scene.add(moonOrbitGuide);
 
     // ======== TRILHAS =========
     const trailLengths = {
@@ -452,49 +451,144 @@
     }
 
     // ======== CÁLCULOS ORBITAIS =========
-    function keplerSolveE(M, e, iterations = 8){
-      let E = M;
+    function keplerSolveE(M, e, iterations = 12){
+      const Mnorm = normalizeRad(M);
+      let E = e < 0.8 ? Mnorm : Math.PI;
+
       for(let i = 0; i < iterations; i++){
-        const f = E - e * Math.sin(E) - M;
+        const f = E - e * Math.sin(E) - Mnorm;
         const fPrime = 1 - e * Math.cos(E);
-        E -= f / fPrime;
+        const delta = f / fPrime;
+        E -= delta;
+        if(Math.abs(delta) < 1e-10) break;
       }
       return E;
     }
 
-    function orbitalPosition({t, T, a, e, incl = 0, omega_node = 0, arg_peri = 0}){
-      const n = (2 * Math.PI) / T;
-      let M = (n * t) % (2 * Math.PI);
-      if(M < 0) M += 2 * Math.PI;
-      
-      const E = keplerSolveE(M, e);
-      const cosE = Math.cos(E), sinE = Math.sin(E);
-      const r = a * (1 - e * cosE);
-      const nu = Math.atan2(
-        Math.sqrt(1 - e*e) * sinE,
-        cosE - e
-      );
-      
-      const x_orb = r * Math.cos(nu);
-      const y_orb = r * Math.sin(nu);
-      
-      const cosw = Math.cos(arg_peri), sinw = Math.sin(arg_peri);
-      const cosO = Math.cos(omega_node), sinO = Math.sin(omega_node);
-      const cosi = Math.cos(incl), sini = Math.sin(incl);
-      
-      const x1 = x_orb*cosw - y_orb*sinw;
-      const y1 = x_orb*sinw + y_orb*cosw;
-      const z1 = 0;
-      
-      const x2 = x1;
-      const y2 = y1*cosi - z1*sini;
-      const z2 = y1*sini + z1*cosi;
-      
+    function orbitalElementsAtCentury(name, Tcent){
+      const src = PLANETS[name].elements;
+      return {
+        a: src.a[0] + src.a[1] * Tcent,
+        e: src.e[0] + src.e[1] * Tcent,
+        I: (src.I[0] + src.I[1] * Tcent) * DEG,
+        L: normalizeDeg(src.L[0] + src.L[1] * Tcent) * DEG,
+        longPeri: normalizeDeg(src.longPeri[0] + src.longPeri[1] * Tcent) * DEG,
+        longNode: normalizeDeg(src.longNode[0] + src.longNode[1] * Tcent) * DEG
+      };
+    }
+
+    function heliocentricFromElements(el, meanAnomalyOverride = null){
+      const M = meanAnomalyOverride == null
+        ? normalizeRad(el.L - el.longPeri)
+        : normalizeRad(meanAnomalyOverride);
+
+      const E = keplerSolveE(M, el.e);
+      const xv = el.a * (Math.cos(E) - el.e);
+      const yv = el.a * Math.sqrt(1 - el.e * el.e) * Math.sin(E);
+      const v = Math.atan2(yv, xv);
+      const r = Math.hypot(xv, yv);
+      const argPeri = el.longPeri - el.longNode;
+
+      const cosO = Math.cos(el.longNode), sinO = Math.sin(el.longNode);
+      const cosI = Math.cos(el.I), sinI = Math.sin(el.I);
+      const cosVW = Math.cos(v + argPeri), sinVW = Math.sin(v + argPeri);
+
       return new THREE.Vector3(
-        x2*cosO - y2*sinO,
-        x2*sinO + y2*cosO,
-        z2
+        r * (cosO * cosVW - sinO * sinVW * cosI),
+        r * (sinO * cosVW + cosO * sinVW * cosI),
+        r * (sinVW * sinI)
       );
+    }
+
+    function planetHeliocentricPosition(name, simDaysValue){
+      const Tcent = centuriesSinceJ2000(simDaysValue);
+      const el = orbitalElementsAtCentury(name, Tcent);
+      return heliocentricFromElements(el);
+    }
+
+    // Lua geocêntrica aproximada com principais termos periódicos.
+    // Já é significativamente mais fiel do que um círculo kepleriano simples.
+    function moonGeocentricPosition(simDaysValue){
+      const Tcent = centuriesSinceJ2000(simDaysValue);
+
+      const L0 = normalizeDeg(218.3164477 + 481267.88123421 * Tcent);
+      const D  = normalizeDeg(297.8501921 + 445267.1114034  * Tcent);
+      const M  = normalizeDeg(357.5291092 + 35999.0502909   * Tcent);
+      const Mp = normalizeDeg(134.9633964 + 477198.8675055  * Tcent);
+      const F  = normalizeDeg(93.2720950  + 483202.0175233  * Tcent);
+
+      const lon = L0
+        + 6.289 * Math.sin(Mp * DEG)
+        + 1.274 * Math.sin((2*D - Mp) * DEG)
+        + 0.658 * Math.sin((2*D) * DEG)
+        + 0.214 * Math.sin((2*Mp) * DEG)
+        - 0.186 * Math.sin(M * DEG)
+        - 0.114 * Math.sin((2*F) * DEG)
+        + 0.059 * Math.sin((2*D - 2*Mp) * DEG)
+        + 0.057 * Math.sin((2*D - M - Mp) * DEG)
+        + 0.053 * Math.sin((2*D + Mp) * DEG)
+        + 0.046 * Math.sin((2*D - M) * DEG);
+
+      const lat =
+        5.128 * Math.sin(F * DEG)
+        + 0.280 * Math.sin((Mp + F) * DEG)
+        + 0.277 * Math.sin((Mp - F) * DEG)
+        + 0.173 * Math.sin((2*D - F) * DEG)
+        + 0.055 * Math.sin((2*D - Mp + F) * DEG)
+        + 0.046 * Math.sin((2*D - Mp - F) * DEG)
+        + 0.033 * Math.sin((2*D + F) * DEG)
+        + 0.017 * Math.sin((2*Mp + F) * DEG)
+        + 0.009 * Math.sin((2*D + Mp - F) * DEG)
+        + 0.009 * Math.sin((2*D - M + F) * DEG);
+
+      const distanceKm =
+        385000.56
+        - 20905.355 * Math.cos(Mp * DEG)
+        - 3699.111  * Math.cos((2*D - Mp) * DEG)
+        - 2955.968  * Math.cos((2*D) * DEG)
+        - 569.925   * Math.cos((2*Mp) * DEG)
+        + 246.158   * Math.cos((2*Mp - 2*D) * DEG)
+        - 204.586   * Math.cos((M - 2*D) * DEG)
+        - 170.733   * Math.cos((M + Mp - 2*D) * DEG)
+        - 152.137   * Math.cos((M + Mp) * DEG);
+
+      const distanceAU = distanceKm / 149597870.7;
+      const lambda = lon * DEG;
+      const beta = lat * DEG;
+      const cosB = Math.cos(beta);
+
+      return new THREE.Vector3(
+        distanceAU * cosB * Math.cos(lambda),
+        distanceAU * cosB * Math.sin(lambda),
+        distanceAU * Math.sin(beta)
+      );
+    }
+
+    function updatePlanetOrbitLine(name, Tcent){
+      const el = orbitalElementsAtCentury(name, Tcent);
+      const points = [];
+      const steps = 720;
+
+      for(let i = 0; i <= steps; i++){
+        const M = TAU * i / steps;
+        points.push(heliocentricFromElements(el, M));
+      }
+
+      planetObjs[name].orbitLine.geometry.setFromPoints(points);
+    }
+
+    function updateMoonOrbitLine(simDaysValue){
+      const earthPos = planetObjs.Earth.group.position.clone();
+      const points = [];
+      const steps = 220;
+
+      for(let i = 0; i <= steps; i++){
+        const futureDays = simDaysValue + (MOON_SIDEREAL_D * i / steps);
+        const rel = moonGeocentricPosition(futureDays);
+        points.push(earthPos.clone().add(rel));
+      }
+
+      moonOrbitGuide.geometry.setFromPoints(points);
     }
 
     // ======== ESTADO DA SIMULAÇÃO =========
@@ -505,6 +599,7 @@
     let showStars = true;
     let showMoonOrbit = true;
     let showPlanetOrbits = true;
+    let lastOrbitRefreshDay = Number.NaN;
 
     // Data inicial calibrada
     const todayUTC = new Date();
@@ -551,39 +646,30 @@
       // Atualizar posições dos planetas
       const positions = {};
       
-      for(const [name, planet] of Object.entries(PLANETS)){
-        const pos = orbitalPosition({
-          t: simDays,
-          T: planet.T,
-          a: planet.a,
-          e: planet.e,
-          incl: planet.i,
-          omega_node: planet.O,
-          arg_peri: planet.w
-        });
-        
+      for(const name of Object.keys(PLANETS)){
+        const pos = planetHeliocentricPosition(name, simDays);
         planetObjs[name].group.position.copy(pos);
         positions[name] = pos;
-        
-        // Rotação da Terra e nuvens
+
         if(name === 'Earth'){
-          const rotationSpeed = (2 * Math.PI) * (speedDaysPerSec * deltaTime);
-          planetObjs[name].mesh.rotation.y += rotationSpeed;
-          planetObjs[name].group.userData.clouds.rotation.y += rotationSpeed * 1.03;
+          const earthSiderealTurns = simDays / 0.99726968;
+          const spinAngle = TAU * (earthSiderealTurns % 1);
+          planetObjs[name].mesh.rotation.y = spinAngle;
+          planetObjs[name].group.userData.clouds.rotation.y = spinAngle * 1.015;
         }
       }
 
+      if(!Number.isFinite(lastOrbitRefreshDay) || Math.abs(simDays - lastOrbitRefreshDay) > 4){
+        const Tcent = centuriesSinceJ2000(simDays);
+        for(const name of Object.keys(planetObjs)){
+          updatePlanetOrbitLine(name, Tcent);
+        }
+        updateMoonOrbitLine(simDays);
+        lastOrbitRefreshDay = simDays;
+      }
+
       // Posição da Lua
-      const moonRelative = orbitalPosition({
-        t: simDays,
-        T: MOON_D,
-        a: MOON_DISTANCE,
-        e: 0.0549,
-        incl: 5.145 * DEG,
-        omega_node: 125.08 * DEG,
-        arg_peri: 318.15 * DEG
-      });
-      
+      const moonRelative = moonGeocentricPosition(simDays);
       const moonPosition = positions.Earth.clone().add(moonRelative);
       moonGroup.position.copy(moonPosition);
       
