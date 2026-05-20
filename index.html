@@ -59,13 +59,17 @@
       <button id="playPause" class="btn play">⏸️ Pausar</button>
       <div class="seg" style="min-width:260px">
         <span class="lbl">Velocidade (dias/seg)</span>
-        <input id="speed" type="range" min="0.01" max="200" step="0.01" value="3"/>
+        <input id="speed" type="range" min="0.01" max="2000" step="1" value="3"/>
         <span class="pill" id="speedVal">3.00 d/s</span>
       </div>
       <div class="seg">
-        <button id="zoomEarth" class="btn">🔎 Zoom Terra</button>
-        <button id="zoomSystem" class="btn">🌌 Zoom Sistema</button>
-        <button id="zoomMars" class="btn">🟥 Zoom Marte</button>
+        <button id="zoomEarth" class="btn">🔎 Terra</button>
+        <button id="zoomMars" class="btn">🟥 Marte</button>
+        <button id="zoomJupiter" class="btn">🟠 Júpiter</button>
+        <button id="zoomSaturn" class="btn">🪐 Saturno</button>
+        <button id="zoomUranus" class="btn">🧊 Urano</button>
+        <button id="zoomNeptune" class="btn">🔵 Netuno</button>
+        <button id="zoomSystem" class="btn">🌌 Sistema</button>
       </div>
       <button id="toggleView" class="btn">📐 Vista Top</button>
       <label class="seg"><input id="ckLabels" type="checkbox" checked /> <span class="lbl">Rótulos</span></label>
@@ -92,7 +96,8 @@
     // adequadas para visualização astronômica em escala didática.
     const PLANETS = {
       Mercury: {
-        color: 0x8c7853, R: 0.008,
+        color: 0x8c7853, R: 0.008, tilt: 0.034, siderealDay: 58.646,
+        texture: 'https://threejs.org/examples/textures/planets/earth_atmos_2048.jpg', // Placeholder (Mercury texture not in threejs repo)
         elements: {
           a: [0.38709927, 0.00000037],
           e: [0.20563593, 0.00001906],
@@ -103,7 +108,8 @@
         }
       },
       Venus: {
-        color: 0xe6cfb5, R: 0.019,
+        color: 0xe6cfb5, R: 0.019, tilt: 177.36, siderealDay: -243.025,
+        texture: 'https://threejs.org/examples/textures/planets/earth_atmos_2048.jpg', // Placeholder
         elements: {
           a: [0.72333566, 0.00000390],
           e: [0.00677672, -0.00004107],
@@ -114,7 +120,7 @@
         }
       },
       Earth: {
-        color: 0x2a5d9e, R: 0.02,
+        color: 0x2a5d9e, R: 0.02, tilt: 23.44, siderealDay: 0.99727,
         elements: {
           a: [1.00000261, 0.00000562],
           e: [0.01671123, -0.00004392],
@@ -125,7 +131,8 @@
         }
       },
       Mars: {
-        color: 0xcd5c5c, R: 0.011,
+        color: 0xcd5c5c, R: 0.011, tilt: 25.19, siderealDay: 1.02596,
+        texture: 'https://threejs.org/examples/textures/planets/earth_atmos_2048.jpg', // Placeholder
         elements: {
           a: [1.52371034, 0.00001847],
           e: [0.09339410, 0.00007882],
@@ -133,6 +140,54 @@
           L: [-4.55343205, 19140.30268499],
           longPeri: [-23.94362959, 0.44441088],
           longNode: [49.55953891, -0.29257343]
+        }
+      },
+      Jupiter: {
+        color: 0xe0ae6f, R: 0.15, tilt: 3.13, siderealDay: 0.4135,
+        texture: 'https://threejs.org/examples/textures/planets/earth_atmos_2048.jpg', // Placeholder
+        elements: {
+          a: [5.20336301, 0.00060737],
+          e: [0.04839266, -0.00012880],
+          I: [1.30530, -0.00115278],
+          L: [34.40438, 3034.74612],
+          longPeri: [14.75385, 0.23331389],
+          longNode: [100.55615, 0.33810278]
+        }
+      },
+      Saturn: {
+        color: 0xdfd195, R: 0.13, tilt: 26.73, siderealDay: 0.444,
+        texture: 'https://threejs.org/examples/textures/planets/earth_atmos_2048.jpg', // Placeholder
+        elements: {
+          a: [9.53707032, -0.00301530],
+          e: [0.05415060, -0.00036762],
+          I: [2.48446, 0.00169722],
+          L: [49.94432, 1222.49443],
+          longPeri: [92.43194, -0.54135833],
+          longNode: [113.71504, -0.44195833]
+        }
+      },
+      Uranus: {
+        color: 0xbbe1e4, R: 0.07, tilt: 97.77, siderealDay: -0.718,
+        texture: 'https://threejs.org/examples/textures/planets/earth_atmos_2048.jpg', // Placeholder
+        elements: {
+          a: [19.19126393, 0.00152025],
+          e: [0.04716771, -0.00019150],
+          I: [0.76986, -0.00058056],
+          L: [313.23218, 428.48202],
+          longPeri: [170.96424, 0.3646],
+          longNode: [74.22988, -0.46705556]
+        }
+      },
+      Neptune: {
+        color: 0x6081ff, R: 0.07, tilt: 28.32, siderealDay: 0.671,
+        texture: 'https://threejs.org/examples/textures/planets/earth_atmos_2048.jpg', // Placeholder
+        elements: {
+          a: [30.06896348, -0.00125196],
+          e: [0.00858587, 0.00002510],
+          I: [1.76917, -0.00101111],
+          L: [304.88003, 218.45945],
+          longPeri: [44.97135, -0.23456389],
+          longNode: [131.72169, -0.04201389]
         }
       }
     };
@@ -165,8 +220,8 @@
     const scene = new THREE.Scene();
     scene.background = new THREE.Color(0x000011);
 
-    const camera = new THREE.PerspectiveCamera(60, window.innerWidth/window.innerHeight, 0.0001, 1000);
-    camera.position.set(3.2, 1.6, 3.2);
+    const camera = new THREE.PerspectiveCamera(60, window.innerWidth/window.innerHeight, 0.0001, 10000);
+    camera.position.set(10, 5, 10);
 
     const renderer = new THREE.WebGLRenderer({ antialias:true, alpha:false });
     renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
@@ -176,7 +231,7 @@
     const controls = new OrbitControls(camera, renderer.domElement);
     controls.enableDamping = true; controls.dampingFactor = 0.08;
     controls.minDistance = 0.03;
-    controls.maxDistance = 45;
+    controls.maxDistance = 2000;
 
     // ======== ILUMINAÇÃO =========
     scene.add(new THREE.AmbientLight(0xffffff, 0.3));
@@ -184,17 +239,50 @@
     sunLight.position.set(0, 0, 0);
 
     // ======== SOL =========
-    const sun = new THREE.Mesh(
+    const sunGroup = new THREE.Group();
+    scene.add(sunGroup);
+
+    const sunMesh = new THREE.Mesh(
       new THREE.SphereGeometry(R_SUN, 64, 64), 
       new THREE.MeshBasicMaterial({ 
         color: 0xFFD54A,
-        toneMapped: false,
-        emissive: 0xFFD54A,
-        emissiveIntensity: 0.8
+        toneMapped: false
       })
     );
-    sun.add(sunLight);
-    scene.add(sun);
+    sunGroup.add(sunMesh);
+    sunGroup.add(sunLight);
+
+    // Glow do Sol
+    const sunGlowCvs = document.createElement('canvas');
+    sunGlowCvs.width = 128; sunGlowCvs.height = 128;
+    const gctx = sunGlowCvs.getContext('2d');
+    const grad = gctx.createRadialGradient(64,64,0, 64,64,64);
+    grad.addColorStop(0, 'rgba(255, 230, 120, 0.7)');
+    grad.addColorStop(0.3, 'rgba(255, 180, 50, 0.3)');
+    grad.addColorStop(1, 'rgba(255, 100, 0, 0)');
+    gctx.fillStyle = grad;
+    gctx.fillRect(0,0,128,128);
+
+    const sunGlowTex = new THREE.CanvasTexture(sunGlowCvs);
+    const sunGlow = new THREE.Sprite(new THREE.SpriteMaterial({
+      map: sunGlowTex,
+      transparent: true,
+      blending: THREE.AdditiveBlending,
+      depthWrite: false
+    }));
+    sunGlow.scale.set(R_SUN * 10, R_SUN * 10, 1);
+    sunGroup.add(sunGlow);
+
+    // Coroa Externa
+    const outerGlow = new THREE.Sprite(new THREE.SpriteMaterial({
+      map: sunGlowTex,
+      transparent: true,
+      blending: THREE.AdditiveBlending,
+      depthWrite: false,
+      opacity: 0.4
+    }));
+    outerGlow.scale.set(R_SUN * 25, R_SUN * 25, 1);
+    sunGroup.add(outerGlow);
 
     // ======== CARREGAMENTO DE TEXTURAS =========
     const tex = new THREE.TextureLoader();
@@ -259,12 +347,12 @@
 
     // ======== CÂMERA ORTOGRÁFICA =========
     let usingOrtho = false;
-    const orthoH = 7;
+    const orthoH = 35;
     const aspect = window.innerWidth/window.innerHeight;
     const cameraOrtho = new THREE.OrthographicCamera(
-      -orthoH*aspect, orthoH*aspect, orthoH, -orthoH, 0.0001, 1000
+      -orthoH*aspect, orthoH*aspect, orthoH, -orthoH, 0.0001, 10000
     );
-    cameraOrtho.position.set(0, 8, 0);
+    cameraOrtho.position.set(0, 100, 0);
     cameraOrtho.up.set(0, 0, -1);
     cameraOrtho.lookAt(0, 0, 0);
 
@@ -274,16 +362,15 @@
     function createPlanet(name){
       const p = PLANETS[name];
       const group = new THREE.Group();
+
+      const spinGroup = new THREE.Group();
+      spinGroup.rotation.z = (p.tilt || 0) * DEG;
+      group.userData.spinGroup = spinGroup;
+      group.add(spinGroup);
+
       let mesh;
 
       if(name === 'Earth'){
-        // A inclinação axial deve afetar somente a rotação do planeta,
-        // não o plano orbital heliocêntrico.
-        const spinGroup = new THREE.Group();
-        spinGroup.rotation.z = 23.439281 * DEG;
-        group.userData.spinGroup = spinGroup;
-        group.add(spinGroup);
-
         const earthMat = new THREE.MeshPhongMaterial({
           map: earthColor,
           specularMap: earthSpec,
@@ -292,10 +379,7 @@
           specular: 0x222222
         });
 
-        const earthMesh = new THREE.Mesh(
-          new THREE.SphereGeometry(p.R, 72, 72),
-          earthMat
-        );
+        mesh = new THREE.Mesh(new THREE.SphereGeometry(p.R, 72, 72), earthMat);
 
         const clouds = new THREE.Mesh(
           new THREE.SphereGeometry(p.R * R_CLOUDS_SCALE, 64, 64),
@@ -317,22 +401,40 @@
           })
         );
 
-        spinGroup.add(earthMesh);
+        spinGroup.add(mesh);
         spinGroup.add(clouds);
         spinGroup.add(atmosphere);
-        mesh = earthMesh;
         group.userData.clouds = clouds;
 
       } else {
-        mesh = new THREE.Mesh(
-          new THREE.SphereGeometry(p.R, 64, 64),
-          new THREE.MeshStandardMaterial({
-            color: p.color,
-            roughness: 0.8,
-            metalness: 0.1
-          })
-        );
-        group.add(mesh);
+        const material = new THREE.MeshStandardMaterial({
+          color: p.color,
+          roughness: 0.8,
+          metalness: 0.1
+        });
+
+        if(p.texture){
+          const pTex = tex.load(p.texture);
+          pTex.anisotropy = aniso;
+          pTex.colorSpace = THREE.SRGBColorSpace;
+          material.map = pTex;
+        }
+
+        mesh = new THREE.Mesh(new THREE.SphereGeometry(p.R, 64, 64), material);
+        spinGroup.add(mesh);
+
+        if(name === 'Saturn'){
+          const ringGeo = new THREE.RingGeometry(p.R * 1.4, p.R * 2.2, 64);
+          const ringMat = new THREE.MeshStandardMaterial({
+            color: 0xdfd195,
+            side: THREE.DoubleSide,
+            transparent: true,
+            opacity: 0.6
+          });
+          const ring = new THREE.Mesh(ringGeo, ringMat);
+          ring.rotation.x = Math.PI / 2;
+          spinGroup.add(ring);
+        }
       }
 
       // Rótulo
@@ -340,7 +442,11 @@
         Mercury: 'Mercúrio',
         Venus: 'Vênus', 
         Earth: 'Terra',
-        Mars: 'Marte'
+        Mars: 'Marte',
+        Jupiter: 'Júpiter',
+        Saturn: 'Saturno',
+        Uranus: 'Urano',
+        Neptune: 'Netuno'
       };
       const label = makeLabelSprite(labelNames[name]);
       group.add(label);
@@ -360,7 +466,7 @@
       );
       scene.add(orbitLine);
 
-      planetObjs[name] = { group, mesh, label, orbitLine };
+      planetObjs[name] = { group, mesh, spinGroup, label, orbitLine };
       updatePlanetOrbitLine(name, 0);
     }
 
@@ -369,6 +475,10 @@
     createPlanet('Venus');
     createPlanet('Earth');
     createPlanet('Mars');
+    createPlanet('Jupiter');
+    createPlanet('Saturn');
+    createPlanet('Uranus');
+    createPlanet('Neptune');
 
     // ======== LUA =========
     const moonGroup = new THREE.Group();
@@ -405,7 +515,11 @@
       Moon: 180,
       Mercury: 200,
       Venus: 220,
-      Mars: 260
+      Mars: 260,
+      Jupiter: 300,
+      Saturn: 320,
+      Uranus: 340,
+      Neptune: 360
     };
 
     const trails = {};
@@ -433,6 +547,10 @@
     trails.Mercury = createTrail(trailLengths.Mercury);
     trails.Venus = createTrail(trailLengths.Venus);
     trails.Mars = createTrail(trailLengths.Mars);
+    trails.Jupiter = createTrail(trailLengths.Jupiter);
+    trails.Saturn = createTrail(trailLengths.Saturn);
+    trails.Uranus = createTrail(trailLengths.Uranus);
+    trails.Neptune = createTrail(trailLengths.Neptune);
 
     function updateTrail(position, trail){
       const { positions, length } = trail;
@@ -625,6 +743,10 @@
     const btnZoomEarth = document.getElementById('zoomEarth');
     const btnZoomSystem = document.getElementById('zoomSystem');
     const btnZoomMars = document.getElementById('zoomMars');
+    const btnZoomJupiter = document.getElementById('zoomJupiter');
+    const btnZoomSaturn = document.getElementById('zoomSaturn');
+    const btnZoomUranus = document.getElementById('zoomUranus');
+    const btnZoomNeptune = document.getElementById('zoomNeptune');
 
     function updateDateUI(){
       const date = isoDateFromDays(simDays);
@@ -647,14 +769,17 @@
       const positions = {};
       
       for(const name of Object.keys(PLANETS)){
+        const p = PLANETS[name];
         const pos = planetHeliocentricPosition(name, simDays);
         planetObjs[name].group.position.copy(pos);
         positions[name] = pos;
 
-        if(name === 'Earth'){
-          const earthSiderealTurns = simDays / 0.99726968;
-          const spinAngle = TAU * (earthSiderealTurns % 1);
-          planetObjs[name].mesh.rotation.y = spinAngle;
+        // Rotação Sideral Sincronizada
+        const siderealDay = p.siderealDay || 1.0;
+        const spinAngle = TAU * ((simDays / siderealDay) % 1);
+        planetObjs[name].mesh.rotation.y = spinAngle;
+
+        if(name === 'Earth' && planetObjs[name].group.userData.clouds){
           planetObjs[name].group.userData.clouds.rotation.y = spinAngle * 1.015;
         }
       }
@@ -673,13 +798,9 @@
       const moonPosition = positions.Earth.clone().add(moonRelative);
       moonGroup.position.copy(moonPosition);
       
-      // Rotação sincronizada da Lua
-      const toEarth = positions.Earth.clone().sub(moonPosition).normalize();
-      const rotation = new THREE.Quaternion().setFromUnitVectors(
-        new THREE.Vector3(0, 0, 1),
-        toEarth
-      );
-      moonGroup.quaternion.slerp(rotation, 0.2);
+      // Rotação sincronizada da Lua (Tidal Locking Perfeito)
+      // A face visível da Lua (Z+) sempre aponta para a Terra.
+      moonGroup.lookAt(positions.Earth);
 
       // Atualizar trilhas
       if(showTrails){
@@ -688,6 +809,10 @@
         updateTrail(planetObjs.Mercury.group.position, trails.Mercury);
         updateTrail(planetObjs.Venus.group.position, trails.Venus);
         updateTrail(planetObjs.Mars.group.position, trails.Mars);
+        updateTrail(planetObjs.Jupiter.group.position, trails.Jupiter);
+        updateTrail(planetObjs.Saturn.group.position, trails.Saturn);
+        updateTrail(planetObjs.Uranus.group.position, trails.Uranus);
+        updateTrail(planetObjs.Neptune.group.position, trails.Neptune);
       }
       
       // Visibilidade das trilhas
@@ -696,6 +821,10 @@
       trails.Mercury.line.visible = showTrails;
       trails.Venus.line.visible = showTrails;
       trails.Mars.line.visible = showTrails;
+      trails.Jupiter.line.visible = showTrails;
+      trails.Saturn.line.visible = showTrails;
+      trails.Uranus.line.visible = showTrails;
+      trails.Neptune.line.visible = showTrails;
 
       // Visibilidade das órbitas
       for(const name of Object.keys(planetObjs)){
@@ -730,27 +859,44 @@
     
     function createStars(){
       starsGroup.clear();
-      const starGeometry = new THREE.BufferGeometry();
-      const starCount = 6000;
+      const starCount = 7000;
       const positions = new Float32Array(starCount * 3);
+      const colors = new Float32Array(starCount * 3);
+      const sizes = new Float32Array(starCount);
       
       for(let i = 0; i < starCount; i++){
-        const radius = 70 + Math.random() * 150;
+        const radius = 100 + Math.random() * 200;
         const phi = Math.acos(2 * Math.random() - 1);
         const theta = 2 * Math.PI * Math.random();
         
         positions[i * 3] = radius * Math.sin(phi) * Math.cos(theta);
         positions[i * 3 + 1] = radius * Math.sin(phi) * Math.sin(theta);
         positions[i * 3 + 2] = radius * Math.cos(phi);
+
+        // Cores sutis (branco, leve azul, leve amarelo)
+        const type = Math.random();
+        if(type > 0.9){ // Leve Azul
+          colors[i*3] = 0.8; colors[i*3+1] = 0.85; colors[i*3+2] = 1.0;
+        } else if(type > 0.8){ // Leve Amarelo
+          colors[i*3] = 1.0; colors[i*3+1] = 0.95; colors[i*3+2] = 0.8;
+        } else { // Branco
+          colors[i*3] = 1.0; colors[i*3+1] = 1.0; colors[i*3+2] = 1.0;
+        }
+
+        sizes[i] = 0.05 + Math.random() * 0.15;
       }
       
+      const starGeometry = new THREE.BufferGeometry();
       starGeometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
+      starGeometry.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
+      starGeometry.setAttribute('size', new THREE.Float32BufferAttribute(sizes, 1));
       
       const starMaterial = new THREE.PointsMaterial({
-        size: 0.1,
-        color: 0xffffff,
+        size: 0.15,
+        vertexColors: true,
         transparent: true,
-        opacity: 0.8
+        opacity: 0.8,
+        sizeAttenuation: true
       });
       
       const stars = new THREE.Points(starGeometry, starMaterial);
@@ -822,11 +968,27 @@
     });
 
     btnZoomSystem.addEventListener('click', () => {
-      smoothZoomTo(new THREE.Vector3(0, 0, 0), 6.0);
+      smoothZoomTo(new THREE.Vector3(0, 0, 0), 45.0);
     });
 
     btnZoomMars.addEventListener('click', () => {
       smoothZoomTo(planetObjs.Mars.group.position, 0.15);
+    });
+
+    btnZoomJupiter.addEventListener('click', () => {
+      smoothZoomTo(planetObjs.Jupiter.group.position, 0.8);
+    });
+
+    btnZoomSaturn.addEventListener('click', () => {
+      smoothZoomTo(planetObjs.Saturn.group.position, 1.0);
+    });
+
+    btnZoomUranus.addEventListener('click', () => {
+      smoothZoomTo(planetObjs.Uranus.group.position, 0.6);
+    });
+
+    btnZoomNeptune.addEventListener('click', () => {
+      smoothZoomTo(planetObjs.Neptune.group.position, 0.6);
     });
 
     function smoothZoomTo(target, distance){
@@ -884,12 +1046,13 @@
       test('Controles orbitais funcionais', typeof OrbitControls !== 'undefined');
       test('Renderer WebGL criado', renderer instanceof THREE.WebGLRenderer);
       test('Cena criada', scene instanceof THREE.Scene);
-      test('Sol posicionado', sun.position.length() < 0.001);
+      test('Sol posicionado', sunGroup.position.length() < 0.001);
       test('Terra criada', planetObjs.Earth && planetObjs.Earth.mesh.isMesh);
       test('Lua criada', moonMesh && moonMesh.isMesh);
       test('Mercúrio criado', planetObjs.Mercury && planetObjs.Mercury.mesh.isMesh);
       test('Vênus criado', planetObjs.Venus && planetObjs.Venus.mesh.isMesh);
       test('Marte criado', planetObjs.Mars && planetObjs.Mars.mesh.isMesh);
+      test('Netuno criado', planetObjs.Neptune && planetObjs.Neptune.mesh.isMesh);
       
       // Teste de órbitas
       setTimeout(() => {
@@ -900,6 +1063,10 @@
         const marsPos = planetObjs.Mars.group.position;
         const marsDist = marsPos.length();
         test('Marte ~1.5 UA', marsDist > 1.4 && marsDist < 1.6);
+
+        const neptunePos = planetObjs.Neptune.group.position;
+        const neptuneDist = neptunePos.length();
+        test('Netuno ~30 UA', neptuneDist > 29 && neptuneDist < 31);
         
         // Log dos resultados
         console.log('📊 Resultados dos testes:');
