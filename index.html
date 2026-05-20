@@ -92,7 +92,8 @@
     // adequadas para visualização astronômica em escala didática.
     const PLANETS = {
       Mercury: {
-        color: 0x8c7853, R: 0.008,
+        color: 0x8c7853, R: 0.008, tilt: 0.034, siderealDay: 58.646,
+        texture: 'https://threejs.org/examples/textures/planets/earth_atmos_2048.jpg', // Placeholder (Mercury texture not in threejs repo)
         elements: {
           a: [0.38709927, 0.00000037],
           e: [0.20563593, 0.00001906],
@@ -103,7 +104,8 @@
         }
       },
       Venus: {
-        color: 0xe6cfb5, R: 0.019,
+        color: 0xe6cfb5, R: 0.019, tilt: 177.36, siderealDay: -243.025,
+        texture: 'https://threejs.org/examples/textures/planets/earth_atmos_2048.jpg', // Placeholder
         elements: {
           a: [0.72333566, 0.00000390],
           e: [0.00677672, -0.00004107],
@@ -114,7 +116,7 @@
         }
       },
       Earth: {
-        color: 0x2a5d9e, R: 0.02,
+        color: 0x2a5d9e, R: 0.02, tilt: 23.44, siderealDay: 0.99727,
         elements: {
           a: [1.00000261, 0.00000562],
           e: [0.01671123, -0.00004392],
@@ -125,7 +127,8 @@
         }
       },
       Mars: {
-        color: 0xcd5c5c, R: 0.011,
+        color: 0xcd5c5c, R: 0.011, tilt: 25.19, siderealDay: 1.02596,
+        texture: 'https://threejs.org/examples/textures/planets/earth_atmos_2048.jpg', // Placeholder
         elements: {
           a: [1.52371034, 0.00001847],
           e: [0.09339410, 0.00007882],
@@ -184,17 +187,39 @@
     sunLight.position.set(0, 0, 0);
 
     // ======== SOL =========
-    const sun = new THREE.Mesh(
+    const sunGroup = new THREE.Group();
+    scene.add(sunGroup);
+
+    const sunMesh = new THREE.Mesh(
       new THREE.SphereGeometry(R_SUN, 64, 64), 
       new THREE.MeshBasicMaterial({ 
         color: 0xFFD54A,
-        toneMapped: false,
-        emissive: 0xFFD54A,
-        emissiveIntensity: 0.8
+        toneMapped: false
       })
     );
-    sun.add(sunLight);
-    scene.add(sun);
+    sunGroup.add(sunMesh);
+    sunGroup.add(sunLight);
+
+    // Glow do Sol
+    const sunGlowCvs = document.createElement('canvas');
+    sunGlowCvs.width = 128; sunGlowCvs.height = 128;
+    const gctx = sunGlowCvs.getContext('2d');
+    const grad = gctx.createRadialGradient(64,64,0, 64,64,64);
+    grad.addColorStop(0, 'rgba(255, 230, 120, 0.7)');
+    grad.addColorStop(0.3, 'rgba(255, 180, 50, 0.3)');
+    grad.addColorStop(1, 'rgba(255, 100, 0, 0)');
+    gctx.fillStyle = grad;
+    gctx.fillRect(0,0,128,128);
+
+    const sunGlowTex = new THREE.CanvasTexture(sunGlowCvs);
+    const sunGlow = new THREE.Sprite(new THREE.SpriteMaterial({
+      map: sunGlowTex,
+      transparent: true,
+      blending: THREE.AdditiveBlending,
+      depthWrite: false
+    }));
+    sunGlow.scale.set(R_SUN * 12, R_SUN * 12, 1);
+    sunGroup.add(sunGlow);
 
     // ======== CARREGAMENTO DE TEXTURAS =========
     const tex = new THREE.TextureLoader();
@@ -274,16 +299,15 @@
     function createPlanet(name){
       const p = PLANETS[name];
       const group = new THREE.Group();
+
+      const spinGroup = new THREE.Group();
+      spinGroup.rotation.z = (p.tilt || 0) * DEG;
+      group.userData.spinGroup = spinGroup;
+      group.add(spinGroup);
+
       let mesh;
 
       if(name === 'Earth'){
-        // A inclinação axial deve afetar somente a rotação do planeta,
-        // não o plano orbital heliocêntrico.
-        const spinGroup = new THREE.Group();
-        spinGroup.rotation.z = 23.439281 * DEG;
-        group.userData.spinGroup = spinGroup;
-        group.add(spinGroup);
-
         const earthMat = new THREE.MeshPhongMaterial({
           map: earthColor,
           specularMap: earthSpec,
@@ -292,10 +316,7 @@
           specular: 0x222222
         });
 
-        const earthMesh = new THREE.Mesh(
-          new THREE.SphereGeometry(p.R, 72, 72),
-          earthMat
-        );
+        mesh = new THREE.Mesh(new THREE.SphereGeometry(p.R, 72, 72), earthMat);
 
         const clouds = new THREE.Mesh(
           new THREE.SphereGeometry(p.R * R_CLOUDS_SCALE, 64, 64),
@@ -317,22 +338,27 @@
           })
         );
 
-        spinGroup.add(earthMesh);
+        spinGroup.add(mesh);
         spinGroup.add(clouds);
         spinGroup.add(atmosphere);
-        mesh = earthMesh;
         group.userData.clouds = clouds;
 
       } else {
-        mesh = new THREE.Mesh(
-          new THREE.SphereGeometry(p.R, 64, 64),
-          new THREE.MeshStandardMaterial({
-            color: p.color,
-            roughness: 0.8,
-            metalness: 0.1
-          })
-        );
-        group.add(mesh);
+        const material = new THREE.MeshStandardMaterial({
+          color: p.color,
+          roughness: 0.8,
+          metalness: 0.1
+        });
+
+        if(p.texture){
+          const pTex = tex.load(p.texture);
+          pTex.anisotropy = aniso;
+          pTex.colorSpace = THREE.SRGBColorSpace;
+          material.map = pTex;
+        }
+
+        mesh = new THREE.Mesh(new THREE.SphereGeometry(p.R, 64, 64), material);
+        spinGroup.add(mesh);
       }
 
       // Rótulo
@@ -360,7 +386,7 @@
       );
       scene.add(orbitLine);
 
-      planetObjs[name] = { group, mesh, label, orbitLine };
+      planetObjs[name] = { group, mesh, spinGroup, label, orbitLine };
       updatePlanetOrbitLine(name, 0);
     }
 
@@ -647,14 +673,17 @@
       const positions = {};
       
       for(const name of Object.keys(PLANETS)){
+        const p = PLANETS[name];
         const pos = planetHeliocentricPosition(name, simDays);
         planetObjs[name].group.position.copy(pos);
         positions[name] = pos;
 
-        if(name === 'Earth'){
-          const earthSiderealTurns = simDays / 0.99726968;
-          const spinAngle = TAU * (earthSiderealTurns % 1);
-          planetObjs[name].mesh.rotation.y = spinAngle;
+        // Rotação Sideral Sincronizada
+        const siderealDay = p.siderealDay || 1.0;
+        const spinAngle = TAU * ((simDays / siderealDay) % 1);
+        planetObjs[name].mesh.rotation.y = spinAngle;
+
+        if(name === 'Earth' && planetObjs[name].group.userData.clouds){
           planetObjs[name].group.userData.clouds.rotation.y = spinAngle * 1.015;
         }
       }
@@ -673,13 +702,9 @@
       const moonPosition = positions.Earth.clone().add(moonRelative);
       moonGroup.position.copy(moonPosition);
       
-      // Rotação sincronizada da Lua
-      const toEarth = positions.Earth.clone().sub(moonPosition).normalize();
-      const rotation = new THREE.Quaternion().setFromUnitVectors(
-        new THREE.Vector3(0, 0, 1),
-        toEarth
-      );
-      moonGroup.quaternion.slerp(rotation, 0.2);
+      // Rotação sincronizada da Lua (Tidal Locking Perfeito)
+      // A face visível da Lua (Z+) sempre aponta para a Terra.
+      moonGroup.lookAt(positions.Earth);
 
       // Atualizar trilhas
       if(showTrails){
@@ -730,27 +755,44 @@
     
     function createStars(){
       starsGroup.clear();
-      const starGeometry = new THREE.BufferGeometry();
-      const starCount = 6000;
+      const starCount = 7000;
       const positions = new Float32Array(starCount * 3);
+      const colors = new Float32Array(starCount * 3);
+      const sizes = new Float32Array(starCount);
       
       for(let i = 0; i < starCount; i++){
-        const radius = 70 + Math.random() * 150;
+        const radius = 100 + Math.random() * 200;
         const phi = Math.acos(2 * Math.random() - 1);
         const theta = 2 * Math.PI * Math.random();
         
         positions[i * 3] = radius * Math.sin(phi) * Math.cos(theta);
         positions[i * 3 + 1] = radius * Math.sin(phi) * Math.sin(theta);
         positions[i * 3 + 2] = radius * Math.cos(phi);
+
+        // Cores sutis (branco, leve azul, leve amarelo)
+        const type = Math.random();
+        if(type > 0.9){ // Leve Azul
+          colors[i*3] = 0.8; colors[i*3+1] = 0.85; colors[i*3+2] = 1.0;
+        } else if(type > 0.8){ // Leve Amarelo
+          colors[i*3] = 1.0; colors[i*3+1] = 0.95; colors[i*3+2] = 0.8;
+        } else { // Branco
+          colors[i*3] = 1.0; colors[i*3+1] = 1.0; colors[i*3+2] = 1.0;
+        }
+
+        sizes[i] = 0.05 + Math.random() * 0.15;
       }
       
+      const starGeometry = new THREE.BufferGeometry();
       starGeometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
+      starGeometry.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
+      starGeometry.setAttribute('size', new THREE.Float32BufferAttribute(sizes, 1));
       
       const starMaterial = new THREE.PointsMaterial({
-        size: 0.1,
-        color: 0xffffff,
+        size: 0.15,
+        vertexColors: true,
         transparent: true,
-        opacity: 0.8
+        opacity: 0.8,
+        sizeAttenuation: true
       });
       
       const stars = new THREE.Points(starGeometry, starMaterial);
@@ -884,7 +926,7 @@
       test('Controles orbitais funcionais', typeof OrbitControls !== 'undefined');
       test('Renderer WebGL criado', renderer instanceof THREE.WebGLRenderer);
       test('Cena criada', scene instanceof THREE.Scene);
-      test('Sol posicionado', sun.position.length() < 0.001);
+      test('Sol posicionado', sunGroup.position.length() < 0.001);
       test('Terra criada', planetObjs.Earth && planetObjs.Earth.mesh.isMesh);
       test('Lua criada', moonMesh && moonMesh.isMesh);
       test('Mercúrio criado', planetObjs.Mercury && planetObjs.Mercury.mesh.isMesh);
