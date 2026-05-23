@@ -92,13 +92,54 @@
 
     #lightInfo{ position:fixed; bottom:110px; left:50%; transform:translateX(-50%); display:none; background:rgba(5,10,30,0.92); border:1px solid #334477; border-radius:10px; padding:8px 14px; font-size:12px; text-align:center; min-width:240px; }
 
-    @media(max-width:600px){ #hud{ bottom:6px; padding:7px; } .btn{ padding:5px 8px; font-size:11px; } #datebar{ left:50%; right:auto; transform:translateX(-50%); top:auto; bottom:140px; } }
+    @media(max-width:640px){
+      #hud{ bottom:6px; padding:7px; }
+      .btn{ padding:8px 10px; font-size:12px; min-height:44px; }
+      #datebar{ left:50%; right:auto; transform:translateX(-50%); top:auto; bottom:148px; }
+      .row-extra{ display:none; }
+      .row-extra.open{ display:flex; }
+      #hudToggle{ display:inline-flex !important; }
+    }
+    #hudToggle{ display:none; }
+
+    #welcome{
+      position:fixed; inset:0; background:rgba(0,0,15,0.92); z-index:500;
+      display:flex; align-items:center; justify-content:center;
+    }
+    #welcomeBox{
+      background:rgba(5,12,30,0.98); border:1px solid var(--border); border-radius:16px;
+      padding:30px 32px; max-width:420px; width:calc(100vw - 32px);
+      display:flex; flex-direction:column; gap:18px; text-align:center;
+    }
+    #welcomeBox h2{ margin:0; font-size:20px; color:#93c5fd; }
+    #welcomeBox .tip{ display:flex; align-items:flex-start; gap:12px; text-align:left; font-size:13px; line-height:1.5; color:var(--muted); }
+    #welcomeBox .tip span:first-child{ font-size:22px; flex-shrink:0; }
+
+    #gestureHint{
+      position:fixed; bottom:160px; left:50%; transform:translateX(-50%);
+      background:rgba(5,10,30,0.90); border:1px solid var(--border); border-radius:10px;
+      padding:9px 18px; font-size:13px; color:var(--muted); pointer-events:none;
+      display:none; white-space:nowrap;
+      animation:fadeGesture 3.5s ease forwards;
+    }
+    @keyframes fadeGesture{ 0%{opacity:0} 15%{opacity:1} 75%{opacity:1} 100%{opacity:0} }
   </style>
   <script type="importmap">{"imports":{"three":"https://unpkg.com/three@0.160.0/build/three.module.js","three/examples/jsm/controls/OrbitControls.js":"https://unpkg.com/three@0.160.0/examples/jsm/controls/OrbitControls.js"}}</script>
 </head>
 <body>
+<div id="welcome">
+  <div id="welcomeBox">
+    <h2>🌌 Sistema Solar 3D</h2>
+    <div class="tip"><span>🖱️</span><span>Clique e arraste para girar a cena. Scroll ou pinça para aproximar.</span></div>
+    <div class="tip"><span>🪐</span><span>Clique em qualquer planeta para ver dados reais e uma curiosidade.</span></div>
+    <div class="tip"><span>📅</span><span>Use o seletor de data (canto superior direito) para viajar no tempo.</span></div>
+    <div class="tip"><span>⚡</span><span>Dê um duplo clique em um planeta para aproximar automaticamente.</span></div>
+    <button id="welcomeStart" class="btn" style="align-self:center;padding:10px 28px;font-size:14px;background:#1d4ed8;border-color:#3b82f6;color:#fff">Começar</button>
+  </div>
+</div>
+<div id="gestureHint">👆 Toque e arraste &nbsp;•&nbsp; 🤌 Pinça para zoom</div>
 <div id="app"></div>
-<div id="title">☀️ Sistema Solar — 12 Melhorias Astronômicas
+<div id="title">☀️ Sistema Solar 3D Interativo
   <div class="sub">8 Planetas · 9 Luas · 3 Planetas Anões · Cometa Halley · Pontos de Lagrange</div>
 </div>
 <div id="datebar" class="panel">
@@ -138,20 +179,20 @@
     <button id="zoomJupiter" class="btn">🪐 Júpiter</button>
     <button id="zoomSaturn" class="btn">💍 Saturno</button>
     <button id="toggleView" class="btn">📐 Vista Top</button>
+    <button id="hudToggle" class="btn">⚙️ Mais</button>
   </div>
-  <div class="row">
+  <div class="row row-extra" id="rowExtra">
     <label class="seg"><input id="ckLabels" type="checkbox" checked/><span class="lbl">Rótulos</span></label>
     <label class="seg"><input id="ckTrails" type="checkbox" checked/><span class="lbl">Trilhas</span></label>
     <label class="seg"><input id="ckOrbits" type="checkbox" checked/><span class="lbl">Órbitas</span></label>
     <label class="seg"><input id="ckMoons" type="checkbox" checked/><span class="lbl">Luas</span></label>
-    <label class="seg"><input id="ckDwarf" type="checkbox" checked/><span class="lbl">An~oes</span></label>
+    <label class="seg"><input id="ckDwarf" type="checkbox" checked/><span class="lbl">Anões</span></label>
     <label class="seg"><input id="ckKuiper" type="checkbox" checked/><span class="lbl">Kuiper</span></label>
     <label class="seg"><input id="ckLagrange" type="checkbox" checked/><span class="lbl">Lagrange</span></label>
     <label class="seg"><input id="ckStars" type="checkbox" checked/><span class="lbl">Estrelas</span></label>
     <button id="btnDist" class="btn">📏 Distâncias</button>
     <button id="btnSize" class="btn">📐 Tamanhos</button>
-    <button id="btnLight" class="btn">💡 Vel. da Luz</button>
-    <span class="lbl" style="margin-left:4px">Clique nos planetas para dados reais</span>
+    <button id="btnLight" class="btn">💡 Luz</button>
   </div>
 </div>
 
@@ -169,7 +210,7 @@ function isoFromDays(d){ return new Date(J2000+d*MS_PER_DAY).toISOString().slice
 function Tc(d){ return d/36525; }
 function normD(a){ return ((a%360)+360)%360; }
 function normR(a){ let v=a%TAU; if(v<0)v+=TAU; return v; }
-const EARTH_VIS_R = 0.020, EARTH_KM = 6371;
+const EARTH_VIS_R = 0.032, EARTH_KM = 6371;
 function sR(km){ return EARTH_VIS_R*(km/EARTH_KM); }
 
 // ═══════════════════════════════════════════════════════
@@ -177,35 +218,35 @@ function sR(km){ return EARTH_VIS_R*(km/EARTH_KM); }
 // ═══════════════════════════════════════════════════════
 const PLANETS = {
   Mercury:{ label:'Mercúrio', color:0xADAFB1, R:sR(2439.7),  tilt:0.034,   rotD:58.646,  trailC:0xAAAAAA, orbitC:0x777777,
-    info:{km:2439.7,  AU:0.3871, pDays:87.97,   rotD:58.646,  tilt:0.034,  moons:0},
+    info:{km:2439.7,  AU:0.3871, pDays:87.97,   rotD:58.646,  tilt:0.034,  moons:0, curiosity:'Um dia mercuriano dura mais que um ano mercuriano.'},
     el:{ a:[0.38709927,0.00000037], e:[0.20563593,0.00001906], I:[7.00497902,-0.00594749],
          L:[252.25032350,149472.67411175], lP:[77.45779628,0.16047689], lN:[48.33076593,-0.12534081] } },
   Venus:{  label:'Vênus',    color:0xE8D5A3, R:sR(6051.8),  tilt:177.36, rotD:-243.025,trailC:0xFFCC66, orbitC:0xCCAA44,
-    info:{km:6051.8, AU:0.7233, pDays:224.70,  rotD:243.025, tilt:177.36, moons:0},
+    info:{km:6051.8, AU:0.7233, pDays:224.70,  rotD:243.025, tilt:177.36, moons:0, curiosity:'Gira de trás pra frente: o Sol nasce no oeste e se põe no leste.'},
     el:{ a:[0.72333566,0.00000390], e:[0.00677672,-0.00004107], I:[3.39467605,-0.00078890],
          L:[181.97909950,58517.81538729], lP:[131.60246718,0.00268329], lN:[76.67984255,-0.27769418] } },
   Earth:{  label:'Terra',    color:0x2a5d9e, R:sR(6371),    tilt:23.439, rotD:0.99727, trailC:0x5588FF, orbitC:0x3355AA,
-    info:{km:6371,   AU:1.0000, pDays:365.25,  rotD:1.000,   tilt:23.44,  moons:1},
+    info:{km:6371,   AU:1.0000, pDays:365.25,  rotD:1.000,   tilt:23.44,  moons:1, curiosity:'Único planeta com vida confirmada e oceanos líquidos na superfície.'},
     el:{ a:[1.00000261,0.00000562], e:[0.01671123,-0.00004392], I:[-0.00001531,-0.01294668],
          L:[100.46457166,35999.37244981], lP:[102.93768193,0.32327364], lN:[0.0,0.0] } },
   Mars:{   label:'Marte',    color:0xC1440E, R:sR(3389.5),  tilt:25.19,  rotD:1.025957,trailC:0xFF5533, orbitC:0xAA3311,
-    info:{km:3389.5, AU:1.5237, pDays:686.97,  rotD:1.026,   tilt:25.19,  moons:2},
+    info:{km:3389.5, AU:1.5237, pDays:686.97,  rotD:1.026,   tilt:25.19,  moons:2, curiosity:'Tem o maior vulcão do sistema solar: Olympus Mons, 22 km de altura.'},
     el:{ a:[1.52371034,0.00001847], e:[0.09339410,0.00007882], I:[1.84969142,-0.00813131],
          L:[-4.55343205,19140.30268499], lP:[-23.94362959,0.44441088], lN:[49.55953891,-0.29257343] } },
   Jupiter:{label:'Júpiter',  color:0xC9A882, R:sR(69911),   tilt:3.13,   rotD:0.41354, trailC:0xFF9933, orbitC:0xAA6622,
-    info:{km:69911,  AU:5.2038, pDays:4332.59, rotD:0.4135,  tilt:3.13,   moons:95},
+    info:{km:69911,  AU:5.2038, pDays:4332.59, rotD:0.4135,  tilt:3.13,   moons:95, curiosity:'A Grande Mancha Vermelha é uma tempestade que dura há mais de 350 anos.'},
     el:{ a:[5.20288700,-0.00011607], e:[0.04838624,-0.00013253], I:[1.30439695,-0.00183714],
          L:[34.39644051,3034.74612775], lP:[14.72847983,0.21252668], lN:[100.47390909,0.20469106] } },
   Saturn:{ label:'Saturno',  color:0xE8D5A0, R:sR(58232),   tilt:26.73,  rotD:0.44401, trailC:0xFFCC00, orbitC:0x997722,
-    info:{km:58232,  AU:9.5371, pDays:10759.22,rotD:0.4440,  tilt:26.73,  moons:146},
+    info:{km:58232,  AU:9.5371, pDays:10759.22,rotD:0.4440,  tilt:26.73,  moons:146, curiosity:'Seus anéis são feitos de gelo e rocha — têm espessura de apenas 10 metros.'},
     el:{ a:[9.53667594,-0.00125060], e:[0.05386179,-0.00050991], I:[2.48599187,0.00193609],
          L:[49.95424423,1222.49362201], lP:[92.59887831,-0.41897216], lN:[113.66242448,-0.28867794] } },
   Uranus:{ label:'Urano',    color:0x7DE8E8, R:sR(25362),   tilt:97.77,  rotD:-0.71833,trailC:0x44DDDD, orbitC:0x229999,
-    info:{km:25362,  AU:19.191, pDays:30688.5, rotD:0.7183,  tilt:97.77,  moons:28},
+    info:{km:25362,  AU:19.191, pDays:30688.5, rotD:0.7183,  tilt:97.77,  moons:28, curiosity:'Gira de lado: sua inclinação axial é de quase 98°, como se rolasse em órbita.'},
     el:{ a:[19.18916464,-0.00196176], e:[0.04725744,-0.00004397], I:[0.77263783,-0.00242939],
          L:[313.23810451,428.48202785], lP:[170.95427630,0.40805281], lN:[74.01692503,0.04240589] } },
   Neptune:{label:'Netuno',   color:0x3F54BA, R:sR(24622),   tilt:28.32,  rotD:0.67125, trailC:0x4466FF, orbitC:0x224499,
-    info:{km:24622,  AU:30.069, pDays:60182,   rotD:0.6713,  tilt:28.32,  moons:16},
+    info:{km:24622,  AU:30.069, pDays:60182,   rotD:0.6713,  tilt:28.32,  moons:16, curiosity:'Os ventos mais velozes do sistema solar: até 2 100 km/h.'},
     el:{ a:[30.06992276,0.00026291], e:[0.00859048,0.00005105], I:[1.77004347,0.00035372],
          L:[-55.12002969,218.45945325], lP:[44.96476227,-0.32241464], lN:[131.78422574,-0.00508664] } }
 };
@@ -259,7 +300,7 @@ const app = document.getElementById('app');
 const scene = new THREE.Scene();
 scene.background = new THREE.Color(0x000005);
 const camera = new THREE.PerspectiveCamera(55, innerWidth/innerHeight, 0.00005, 10000);
-camera.position.set(5,3,5);
+camera.position.set(4,2,4);
 const renderer = new THREE.WebGLRenderer({antialias:true});
 renderer.setPixelRatio(Math.min(devicePixelRatio||1,2));
 renderer.setSize(innerWidth,innerHeight);
@@ -279,7 +320,7 @@ let usingOrtho=false;
 // ═══════════════════════════════════════════════════════
 // ILUMINAÇÃO — ambiente baixo para melhor terminador (melhoria 2)
 // ═══════════════════════════════════════════════════════
-scene.add(new THREE.AmbientLight(0x112233, 0.12));
+scene.add(new THREE.AmbientLight(0x112233, 0.22));
 const sunLight = new THREE.PointLight(0xFFF5E0, 3.0, 5000);
 sunLight.position.set(0,0,0);
 scene.add(sunLight);
@@ -287,14 +328,14 @@ scene.add(sunLight);
 // ═══════════════════════════════════════════════════════
 // SOL — múltiplas camadas com pulsação
 // ═══════════════════════════════════════════════════════
-const R_SUN = sR(696340*0.22);
+const R_SUN = 0.10;
 const sunMesh = new THREE.Mesh(new THREE.SphereGeometry(R_SUN,64,64),
   new THREE.MeshBasicMaterial({color:0xFFD700}));
 scene.add(sunMesh);
-const corona1 = new THREE.Mesh(new THREE.SphereGeometry(R_SUN*1.18,32,32),
+const corona1 = new THREE.Mesh(new THREE.SphereGeometry(R_SUN*1.25,32,32),
   new THREE.MeshBasicMaterial({color:0xFF8C00,transparent:true,opacity:0.22,side:THREE.BackSide,depthWrite:false}));
 scene.add(corona1);
-const corona2 = new THREE.Mesh(new THREE.SphereGeometry(R_SUN*1.45,24,24),
+const corona2 = new THREE.Mesh(new THREE.SphereGeometry(R_SUN*1.60,24,24),
   new THREE.MeshBasicMaterial({color:0xFF4500,transparent:true,opacity:0.09,side:THREE.BackSide,depthWrite:false}));
 scene.add(corona2);
 
@@ -695,7 +736,8 @@ function planetInfoHTML(d,phase){
         +dr('Rotação sideral',rot+(d.rotD<0?' ↩':''))
         +dr('Inclinação axial',`${d.tilt.toFixed(2)}°`)
         +dr('Luas',d.moons)
-        +dr('Fase atual',`${pct}% ${phaseBar}`);
+        +dr('Fase atual',`${pct}% ${phaseBar}`)
+        +(d.curiosity?`<div style="margin-top:8px;padding:7px 9px;background:#0a1628;border-left:2px solid #3b82f6;border-radius:0 6px 6px 0;font-size:11px;color:#93c5fd;line-height:1.4">💡 ${d.curiosity}</div>`:'');
 }
 
 renderer.domElement.addEventListener('click',e=>{
@@ -744,6 +786,25 @@ renderer.domElement.addEventListener('click',e=>{
   }
 });
 document.getElementById('closeInfo').addEventListener('click',()=>infoPanel.style.display='none');
+
+// Double-click / double-tap to zoom into planet
+let lastClickTime=0, lastClickPos={x:0,y:0};
+renderer.domElement.addEventListener('click',e=>{
+  const now=performance.now();
+  const dx=e.clientX-lastClickPos.x, dy=e.clientY-lastClickPos.y;
+  if(now-lastClickTime<300&&Math.hypot(dx,dy)<15){
+    mouse2.x=(e.clientX/innerWidth)*2-1;
+    mouse2.y=-(e.clientY/innerHeight)*2+1;
+    raycaster.setFromCamera(mouse2,usingOrtho?camOrtho:camera);
+    for(const [name,obj] of Object.entries(planetObjs)){
+      if(raycaster.intersectObject(obj.group.userData.mesh,false).length){
+        smoothZoom(obj.group.position.clone(),PLANETS[name].R*8+0.04);
+        return;
+      }
+    }
+  }
+  lastClickTime=now; lastClickPos={x:e.clientX,y:e.clientY};
+});
 
 // ═══════════════════════════════════════════════════════
 // PAINEL DE DISTÂNCIAS (melhoria 3)
@@ -1025,6 +1086,36 @@ document.getElementById('datePicker').addEventListener('change',()=>{
 });
 document.getElementById('todayBtn').addEventListener('click',()=>{
   const n=new Date(); simDays=daysSinceEpoch(Date.UTC(n.getUTCFullYear(),n.getUTCMonth(),n.getUTCDate()));
+});
+
+// Welcome overlay
+(function(){
+  if(!sessionStorage.getItem('solarWelcomeSeen')){
+    document.getElementById('welcome').style.display='flex';
+  } else {
+    document.getElementById('welcome').style.display='none';
+  }
+  document.getElementById('welcomeStart').addEventListener('click',()=>{
+    sessionStorage.setItem('solarWelcomeSeen','1');
+    document.getElementById('welcome').style.display='none';
+  });
+})();
+
+// Gesture hint — show on mobile touch devices
+(function(){
+  const isMobile=('ontouchstart' in window)||navigator.maxTouchPoints>0;
+  if(isMobile){
+    const hint=document.getElementById('gestureHint');
+    hint.style.display='block';
+    setTimeout(()=>{ hint.style.display='none'; },3600);
+  }
+})();
+
+// HUD toggle for mobile
+document.getElementById('hudToggle').addEventListener('click',function(){
+  const row=document.getElementById('rowExtra');
+  row.classList.toggle('open');
+  this.textContent=row.classList.contains('open')?'✕ Fechar':'⚙️ Mais';
 });
 
 window.addEventListener('resize',()=>{
