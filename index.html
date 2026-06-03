@@ -85,6 +85,65 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:10px;heigh
 .aln{position:fixed;top:42px;right:260px;z-index:10;background:rgba(74,222,128,.1);border:1px solid rgba(74,222,128,.3);border-radius:8px;padding:6px 10px;font-size:9px;color:var(--gn);display:none}
 select{font-family:'Outfit',system-ui,sans-serif;font-size:9px;background:var(--s2);color:var(--tx);border:1px solid var(--bd);border-radius:5px;padding:3px 5px;outline:none;cursor:pointer;width:100%}
 @media(max-width:700px){.pn{width:200px;right:4px}.si,.factCard,#mmap,.aln{display:none!important}}
+/* ═══ DEUS DO CAOS — GAME LAYER ═══ */
+#gameTop{position:fixed;top:0;left:0;right:0;height:44px;z-index:25;display:flex;align-items:center;gap:7px;padding:0 8px;pointer-events:none}
+#gameTop>*{pointer-events:auto}
+#gLvl{display:flex;align-items:center;gap:4px;background:rgba(167,139,250,.1);border:1px solid rgba(167,139,250,.25);border-radius:7px;padding:3px 7px;white-space:nowrap}
+#gLvlNum{font-size:11px;font-weight:800;color:#a78bfa}
+#gLvlName{font-size:8px;color:#c4b5fd}
+#gXPWrap{display:flex;flex-direction:column;gap:2px;min-width:90px}
+#gXPTxt{font-size:7px;color:#4a5870}
+#gXPBar{height:4px;border-radius:2px;background:rgba(167,139,250,.12);overflow:hidden}
+#gXPFill{height:100%;border-radius:2px;background:linear-gradient(90deg,#7c3aed,#a78bfa);transition:width .4s;width:0%}
+#gChaosWrap{display:flex;align-items:center;gap:4px}
+#gChaosTxt{font-size:8px;color:#f97316;font-weight:700;white-space:nowrap}
+#gChaosBar{width:80px;height:6px;border-radius:3px;background:rgba(249,115,22,.12);overflow:hidden;border:1px solid rgba(249,115,22,.18)}
+#gChaosFill{height:100%;border-radius:3px;background:linear-gradient(90deg,#dc2626,#f97316,#fbbf24);width:0%;transition:width .3s}
+#gScore{font-family:'JetBrains Mono',monospace;font-size:10px;color:#e8f0ff;white-space:nowrap}
+#gHiScore{font-family:'JetBrains Mono',monospace;font-size:8px;color:#4a5870;white-space:nowrap}
+#gCombo{font-size:13px;font-weight:800;color:#fbbf24;text-shadow:0 0 10px rgba(251,191,36,.6);display:none;animation:gComboPop .25s ease}
+@keyframes gComboPop{from{transform:scale(1.5)}to{transform:scale(1)}}
+#gRes{position:fixed;left:10px;top:50%;transform:translateY(-50%);z-index:22;background:rgba(4,6,16,.92);border:1px solid rgba(50,80,160,.15);border-radius:10px;padding:8px 10px;min-width:148px;pointer-events:auto;backdrop-filter:blur(12px)}
+.gRR{display:flex;align-items:center;gap:5px;padding:3px 0}
+.gRI{font-size:12px}
+.gRL{font-size:8px;color:#4a5870;flex:1}
+.gRV{font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:700;min-width:52px;text-align:right}
+.gRt{font-family:'JetBrains Mono',monospace;font-size:7px;color:#4a5870;min-width:38px;text-align:right}
+.rCC{color:#f97316}.rEE{color:#a78bfa}.rSI{color:#22d3ee}
+#gShop{position:fixed;bottom:60px;left:50%;transform:translateX(-50%);z-index:22;width:min(860px,calc(100vw - 290px));pointer-events:auto}
+#gTabs{display:flex;gap:2px;margin-bottom:0}
+.gTab{font-size:8px;font-weight:600;padding:4px 9px;border-radius:5px 5px 0 0;border:1px solid rgba(50,80,160,.15);border-bottom:none;background:rgba(4,6,16,.7);color:#4a5870;cursor:pointer;transition:.15s;white-space:nowrap}
+.gTab.act{background:rgba(8,12,30,.95);color:#a8bcd8;border-color:rgba(50,80,160,.28)}
+#gCats{background:rgba(4,6,16,.93);border:1px solid rgba(50,80,160,.2);border-radius:0 8px 8px 8px;padding:6px 7px;backdrop-filter:blur(14px)}
+.gCP{display:none;flex-wrap:wrap;gap:4px}.gCP.act{display:flex}
+.gBtn{display:flex;flex-direction:column;align-items:center;gap:2px;padding:5px 6px;min-width:70px;border-radius:7px;border:1px solid rgba(50,80,160,.14);background:rgba(8,12,30,.8);cursor:pointer;transition:all .15s;user-select:none}
+.gBtn:hover:not(.lk){border-color:rgba(249,115,22,.4);background:rgba(249,115,22,.06);transform:translateY(-2px);box-shadow:0 4px 12px rgba(249,115,22,.15)}
+.gBtn:active:not(.lk){transform:scale(.93)}
+.gBtn.lk{opacity:.38;cursor:not-allowed;filter:grayscale(.7)}
+.gBI{font-size:18px;line-height:1.1}
+.gBN{font-size:7px;font-weight:600;color:#a8bcd8;text-align:center;line-height:1.3}
+.gBC{font-family:'JetBrains Mono',monospace;font-size:7px;font-weight:700;text-align:center}
+.gBC.cc{color:#f97316}.gBC.ee{color:#a78bfa}.gBC.si{color:#22d3ee}
+#gNarr{position:fixed;top:48%;left:50%;transform:translate(-50%,-50%);z-index:80;pointer-events:none;text-align:center;opacity:0;transition:opacity .45s}
+#gNarr.show{opacity:1}
+#gNarrT{font-size:17px;font-weight:800;color:#e8f0ff;text-shadow:0 0 30px rgba(249,115,22,.7),0 2px 8px rgba(0,0,0,.95);max-width:480px;line-height:1.4;padding:0 20px}
+#gNarrS{font-size:9px;color:#f97316;margin-top:5px;letter-spacing:.06em;text-transform:uppercase}
+.gFlt{position:fixed;pointer-events:none;z-index:90;font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;text-shadow:0 1px 4px rgba(0,0,0,.8);animation:gFltUp 1.4s ease forwards}
+@keyframes gFltUp{0%{opacity:1;transform:translateY(0) scale(1)}60%{opacity:1;transform:translateY(-32px) scale(1.1)}100%{opacity:0;transform:translateY(-65px) scale(.85)}}
+.gAch{position:fixed;left:10px;z-index:90;background:rgba(251,191,36,.08);border:1px solid rgba(251,191,36,.35);border-radius:8px;padding:7px 10px;min-width:190px;animation:gAchIn .35s ease,gAchOut .4s ease 3.6s forwards;pointer-events:none;backdrop-filter:blur(10px)}
+@keyframes gAchIn{from{transform:translateX(-110%)}to{transform:translateX(0)}}
+@keyframes gAchOut{from{opacity:1;transform:translateX(0)}to{opacity:0;transform:translateX(-80%)}}
+.gAchT{font-size:7px;color:#fbbf24;font-weight:700;text-transform:uppercase;letter-spacing:.05em}
+.gAchN{font-size:10px;color:#e8f0ff;font-weight:700}
+.gAchD{font-size:8px;color:#4a5870;margin-top:1px}
+#gChaosMax{position:fixed;inset:0;z-index:74;pointer-events:none;opacity:0;background:radial-gradient(ellipse at center,rgba(220,38,38,.14),transparent 65%);transition:opacity .6s}
+#gChaosMax.show{opacity:1;animation:gChaosPls 1.2s ease infinite alternate}
+@keyframes gChaosPls{from{opacity:.5}to{opacity:1}}
+#gPrestigeBtn{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);z-index:85;background:linear-gradient(135deg,rgba(185,28,28,.92),rgba(234,88,12,.92));border:2px solid rgba(251,191,36,.55);border-radius:13px;padding:14px 22px;text-align:center;display:none;cursor:pointer;pointer-events:auto;box-shadow:0 0 50px rgba(234,88,12,.45),0 4px 20px rgba(0,0,0,.8);animation:gPresGlow 1.5s ease infinite alternate}
+@keyframes gPresGlow{from{box-shadow:0 0 30px rgba(234,88,12,.35)}to{box-shadow:0 0 70px rgba(234,88,12,.7),0 0 120px rgba(251,191,36,.3)}}
+#gPrestigeBtn h3{font-size:14px;font-weight:800;color:#fff;margin-bottom:3px}
+#gPrestigeBtn p{font-size:9px;color:rgba(255,255,255,.8)}
+@media(max-width:700px){#gRes,#gShop{display:none}}
 </style>
 <script type="importmap">{"imports":{
 "three":"https://unpkg.com/three@0.160.0/build/three.module.js",
@@ -114,6 +173,48 @@ select{font-family:'Outfit',system-ui,sans-serif;font-size:9px;background:var(--
 <div id="mmap"><canvas id="mmapCanvas" width="140" height="140"></canvas><div class="mmap-label">🗺 Mini-mapa</div></div>
 <div class="factCard" id="factCard"><h4 id="fcName">—</h4><div class="rows" id="fcRows"></div></div>
 <div class="aln" id="alnCard">🌟 <span id="alnText">—</span></div>
+
+<!-- ═══ DEUS DO CAOS — GAME HUD ═══ -->
+<div id="gameTop">
+  <div id="gLvl"><span id="gLvlNum">1</span><span id="gLvlName">Perturbador</span></div>
+  <div id="gXPWrap"><div id="gXPTxt">XP 0/100</div><div id="gXPBar"><div id="gXPFill"></div></div></div>
+  <div id="gChaosWrap"><span id="gChaosTxt">CAOS 0%</span><div id="gChaosBar"><div id="gChaosFill"></div></div></div>
+  <div style="flex:1"></div>
+  <div id="gCombo">×1 COMBO</div>
+  <div style="display:flex;flex-direction:column;align-items:flex-end;gap:1px"><div id="gScore">0</div><div id="gHiScore">HI: 0</div></div>
+</div>
+
+<div id="gRes">
+  <div style="font-size:7px;color:#4a5870;text-transform:uppercase;letter-spacing:.07em;margin-bottom:5px">⚡ Recursos Divinos</div>
+  <div class="gRR"><span class="gRI">🔥</span><span class="gRL">Caos Cósmico</span><span class="gRV rCC" id="gCC">0</span><span class="gRt rCC" id="gCCr">+0/s</span></div>
+  <div class="gRR"><span class="gRI">🌑</span><span class="gRL">Energia Escura</span><span class="gRV rEE" id="gEE">0</span><span class="gRt rEE" id="gEEr">+0/s</span></div>
+  <div class="gRR"><span class="gRI">◉</span><span class="gRL">Singularidade</span><span class="gRV rSI" id="gSI">0</span><span class="gRt rSI" id="gSIr">+0/s</span></div>
+  <div style="margin-top:5px;padding-top:4px;border-top:1px solid rgba(50,80,160,.1);display:flex;justify-content:space-between">
+    <span style="font-size:7px;color:#4a5870">MULT <span id="gMult" style="color:#f97316">×1.0</span></span>
+    <span style="font-size:7px;color:#4a5870">ENC <span id="gPresCount" style="color:#a78bfa">0</span></span>
+  </div>
+</div>
+
+<div id="gShop">
+  <div id="gTabs">
+    <div class="gTab act" onclick="gSetTab(0)">☄️ Tier 1</div>
+    <div class="gTab" onclick="gSetTab(1)">💥 Tier 2</div>
+    <div class="gTab" onclick="gSetTab(2)">💀 Tier 3</div>
+    <div class="gTab" onclick="gSetTab(3)">🌌 Tier 4</div>
+    <div class="gTab" onclick="gSetTab(4)">☠️ Tier 5</div>
+  </div>
+  <div id="gCats">
+    <div class="gCP act" id="gC0"></div>
+    <div class="gCP" id="gC1"></div>
+    <div class="gCP" id="gC2"></div>
+    <div class="gCP" id="gC3"></div>
+    <div class="gCP" id="gC4"></div>
+  </div>
+</div>
+
+<div id="gNarr"><div id="gNarrT"></div><div id="gNarrS"></div></div>
+<div id="gChaosMax"></div>
+<div id="gPrestigeBtn" onclick="gPrestige()"><h3>☠️ DESENCADEAR O FIM</h3><p>Renasce como divindade mais poderosa<br><small id="gPrestigeInfo"></small></p></div>
 
 <div class="pn">
   <div class="ph"><h2>⚡ ULTIMATE God Mode</h2><span class="bdg">∞</span></div>
@@ -735,7 +836,7 @@ const volcDebris=[];function doVolcano(n,inten){if(!pO[n]||GS[n].dd)return;GS[n]
 function doCollision(a,b){if(!pO[a]||!pO[b]||GS[a].dd||GS[b].dd)return;const N=800,ps=new Float32Array(N*3),vs=[],mid=pO[a].g.position.clone().add(pO[b].g.position).multiplyScalar(.5);for(let i=0;i<N;i++){const d=new T3.Vector3(Math.random()-.5,Math.random()-.5,Math.random()-.5).normalize();ps[i*3]=mid.x;ps[i*3+1]=mid.y;ps[i*3+2]=mid.z;vs.push(d.multiplyScalar(.005+Math.random()*.015))}const ge=new T3.BufferGeometry();ge.setAttribute('position',new T3.Float32BufferAttribute(ps,3));const pt=new T3.Points(ge,new T3.PointsMaterial({size:.005,color:0xff8800,transparent:true,opacity:.95}));scene.add(pt);deb.push({pt,vs,life:500,ps});desP(a);toast(`💥 ${PL[a].l} × ${PL[b].l}!`)}
 // Debris
 const deb=[];function uDeb(){for(let i=deb.length-1;i>=0;i--){const d=deb[i];for(let j=0;j<d.vs.length;j++){d.ps[j*3]+=d.vs[j].x;d.ps[j*3+1]+=d.vs[j].y;d.ps[j*3+2]+=d.vs[j].z}d.pt.geometry.attributes.position.needsUpdate=true;d.life--;d.pt.material.opacity=d.life/500;if(d.life<=0){scene.remove(d.pt);deb.splice(i,1)}}}
-function desP(n){if(GS[n].dd)return;GS[n].dd=true;pO[n].g.visible=false;const pos=pO[n].g.position.clone(),R=PL[n].R,N=600,ps=new Float32Array(N*3),vs=[];for(let i=0;i<N;i++){const d=new T3.Vector3(Math.random()-.5,Math.random()-.5,Math.random()-.5).normalize();ps[i*3]=pos.x+d.x*R*.5;ps[i*3+1]=pos.y+d.y*R*.5;ps[i*3+2]=pos.z+d.z*R*.5;vs.push(d.multiplyScalar(.003+Math.random()*.012))}const ge=new T3.BufferGeometry();ge.setAttribute('position',new T3.Float32BufferAttribute(ps,3));const pt=new T3.Points(ge,new T3.PointsMaterial({size:.004,color:0xffaa66,transparent:true,opacity:.9}));scene.add(pt);deb.push({pt,vs,life:600,ps});toast(`💥 ${PL[n].l} destruído!`)}
+function desP(n){if(GS[n].dd)return;GS[n].dd=true;pO[n].g.visible=false;const pos=pO[n].g.position.clone(),R=PL[n].R,N=600,ps=new Float32Array(N*3),vs=[];for(let i=0;i<N;i++){const d=new T3.Vector3(Math.random()-.5,Math.random()-.5,Math.random()-.5).normalize();ps[i*3]=pos.x+d.x*R*.5;ps[i*3+1]=pos.y+d.y*R*.5;ps[i*3+2]=pos.z+d.z*R*.5;vs.push(d.multiplyScalar(.003+Math.random()*.012))}const ge=new T3.BufferGeometry();ge.setAttribute('position',new T3.Float32BufferAttribute(ps,3));const pt=new T3.Points(ge,new T3.PointsMaterial({size:.004,color:0xffaa66,transparent:true,opacity:.9}));scene.add(pt);deb.push({pt,vs,life:600,ps});toast(`💥 ${PL[n].l} destruído!`);if(typeof gOnDestroy==='function')gOnDestroy(n)}
 // Supernova
 function tSN(){if(snX)return;snX=true;sunG.visible=false;snGrp.visible=true;for(const n of AN)delete GS[n]._fd;toast('☀ SUPERNOVA!')}
 function uSN(){if(!snX)return;snTm+=.016;const pa=snGe.attributes.position.array;for(let i=0;i<SN;i++){pa[i*3]+=snVl[i].x*.022;pa[i*3+1]+=snVl[i].y*.022;pa[i*3+2]+=snVl[i].z*.022}snGe.attributes.position.needsUpdate=true;snGrp.children[0].material.opacity=Math.max(0,.9-snTm*.04)}
@@ -1555,6 +1656,241 @@ setInterval(()=>{
   updateProbe();
   if($('distA').value&&$('distB').value)measureDistance();
 },16);
+
+/* ════════════════════════════════════════════════════
+   DEUS DO CAOS — SISTEMA DE GAME
+   ════════════════════════════════════════════════════ */
+const GAME={res:{cc:0,ee:0,si:0},rates:{cc:0,ee:0,si:0},lvl:1,xp:0,xpNext:100,combo:0,score:0,hiScore:0,totalDest:0,chaosLvl:0,prestigeCount:0,globalMult:1,achEarned:new Set(),_comboTO:null};
+const GLEVELS=[{xp:0,name:'Perturbador',tier:1},{xp:200,name:'Demolidor',tier:2},{xp:600,name:'Destruidor',tier:3},{xp:1500,name:'Aniquilador',tier:4},{xp:5000,name:'Deus do Caos',tier:5}];
+
+const GCATS=[
+  [{id:'meteor',  ico:'☄️', name:'Chuva de Meteoros',    cost:15,   res:'cc',fn:()=>spM(sel||AN.find(n=>!GS[n].dd)||'Earth',8),           xp:10, chaos:3,  narr:['Os céus se abrem... pedras de fogo caem.','O bombardeio começa. O terror cresce.']},
+   {id:'volcano', ico:'🌋', name:'Erupção Vulcânica',     cost:25,   res:'cc',fn:()=>{const t=sel||AN.find(n=>!GS[n].dd);if(t)doVolcano(t,2.5)},    xp:15, chaos:5,  narr:['A terra racha. O magma emerge das profundezas.','Vulcões acordam após milênios de silêncio.']},
+   {id:'flood',   ico:'🌊', name:'Dilúvio Global',        cost:30,   res:'cc',fn:()=>climateEvent('flood'),                                 xp:15, chaos:5,  narr:['Os oceanos se erguem. Continentes desaparecem.','A água cobre tudo. A vida luta para sobreviver.']},
+   {id:'freeze',  ico:'❄️', name:'Era Glacial',           cost:30,   res:'cc',fn:()=>climateEvent('freeze'),                                xp:15, chaos:5,  narr:['O frio eterno chega. Tudo congela em instantes.','Uma era de gelo se instala.']},
+   {id:'boil',    ico:'🔥', name:'Calor Infernal',        cost:35,   res:'cc',fn:()=>climateEvent('boil'),                                  xp:18, chaos:6,  narr:['Oceanos evaporam. Rochas derretem.','O planeta ferve. Nenhuma vida sobrevive ao calor.']},
+   {id:'storm2',  ico:'🌀', name:'Tempestade Caótica',    cost:40,   res:'cc',fn:()=>climateEvent('storm'),                                 xp:20, chaos:7,  narr:['Ventos impossíveis varrem a superfície planetária.','A atmosfera inteira entra em colapso caótico.']}],
+  [{id:'collision',ico:'💥',name:'Colisão Planetária',   cost:150,  res:'cc',fn:()=>{const a=AN.filter(n=>!GS[n].dd&&GS[n].on);if(a.length>=2)doCollision(a[0],a[1]);else toast('Precisa de 2 planetas!')}, xp:80, chaos:20, narr:['DOIS MUNDOS SE CHOCAM.','A colisão reverbera pelo sistema. Bilhões extintos num instante.','O som do impacto viajaria por anos-luz.']},
+   {id:'orbital', ico:'🌀', name:'Caos Orbital',          cost:200,  res:'cc',fn:embaralhar,                                                xp:90, chaos:22, narr:['As órbitas se desintegram. Planetas errantes colidem entre si.','A gravidade enlouquece.']},
+   {id:'cme',     ico:'☀️', name:'Ejeção de Massa Coronal',cost:250, res:'cc',fn:tempestadeSolar,                                           xp:100,chaos:25, narr:['O Sol cospe bilhões de toneladas de plasma.','A tempestade solar apaga todos os campos magnéticos.']},
+   {id:'redsun',  ico:'🔴', name:'Sol Gigante Vermelha',  cost:400,  res:'cc',fn:()=>cosmicEvent('morte_sol'),                              xp:150,chaos:35, narr:['O Sol expande. Mercúrio e Vênus são engolidos.','Uma gigante vermelha devora seus próprios filhos.']},
+   {id:'rogue2',  ico:'🌍', name:'Planeta Errante',       cost:300,  res:'cc',fn:launchRogue,                                               xp:120,chaos:28, narr:['Um planeta sem estrela entra no sistema.','Ele não pertence aqui. Mas veio para destruir.']},
+   {id:'lhb2',    ico:'☄️', name:'Bombardeio Tardio',     cost:350,  res:'cc',fn:triggerLHB,                                                xp:130,chaos:30, narr:['O Grande Bombardeio Tardio recomeça.','Nada está seguro.']}],
+  [{id:'supernova2',ico:'💀',name:'Supernova',            cost:1500, res:'ee',fn:tSN,                                                       xp:500, chaos:50,ee_b:200, narr:['A ESTRELA MORRE EM GLÓRIA.','A explosão libera mais energia do que o Sol em 1 bilhão de anos.','Uma última mensagem para o universo.']},
+   {id:'bh2',     ico:'⚫', name:'Buraco Negro',           cost:2000, res:'ee',fn:createBH,                                                  xp:600, chaos:55,ee_b:300, narr:['UMA SINGULARIDADE DESPERTA.','O horizonte de eventos engole luz, matéria, esperança.','Nada pode escapar.']},
+   {id:'hypernova2',ico:'🌌',name:'Hipernova',            cost:5000, res:'ee',fn:triggerHypernova,                                           xp:1200,chaos:70,ee_b:800, narr:['A HIPERNOVA ENGOLE O SISTEMA INTEIRO.','Uma detonação de raios-gama atravessa tudo.','Estrelas a 10 parsecs sentem a onda de choque.']},
+   {id:'gravity2',ico:'💫', name:'Onda Gravitacional',    cost:3000, res:'ee',fn:ondaGravitacional,                                          xp:800, chaos:60,ee_b:400, narr:['O espaço-tempo ondula.','Ondas gravitacionais atravessam a realidade.']},
+   {id:'stars2',  ico:'⭐', name:'Chuva de Estrelas',     cost:1200, res:'ee',fn:chuvaEstrelas,                                              xp:400, chaos:45,ee_b:150, narr:['Meteoros riscam o céu como lágrimas de deus.','O espetáculo celestial mascara a destruição.']},
+   {id:'nebula2', ico:'🌫️',name:'Nebulosa Planetária',   cost:1800, res:'ee',fn:createNebulosa,                                             xp:550, chaos:52,ee_b:250, narr:['O plasma do planeta morto ilumina o vácuo.','Uma nebulosa nasce das cinzas.']}],
+  [{id:'colapso2',ico:'🔳', name:'Colapso Gravitacional', cost:15000,res:'ee',fn:()=>cosmicEvent('colapso'),                                xp:3000,chaos:80,ee_b:2000,narr:['OS PLANETAS CAEM EM DIREÇÃO AO SOL.','Em minutos, o sistema solar inteiro cabe em um ponto.','A gravidade ganha. Sempre.']},
+   {id:'impulso2',ico:'🚀', name:'Impulso Cósmico',       cost:12000,res:'ee',fn:()=>cosmicEvent('impulso'),                                xp:2500,chaos:75,ee_b:1500,narr:['PLANETAS SÃO EJETADOS PARA O VAZIO.','Velocidades superluminares arrancam mundos de suas órbitas.']},
+   {id:'darkmt2', ico:'🌑', name:'Matéria Escura',        cost:18000,res:'ee',fn:darkMatter,                                                xp:3500,chaos:82,ee_b:2500,narr:['A matéria escura se condensa. A realidade distorce.','95% do universo age. A massa invisível esmaga tudo.']},
+   {id:'antimt2', ico:'⚛️', name:'Antimatéria',          cost:20000,res:'ee',fn:antimatter,                                                xp:4000,chaos:85,ee_b:3000,narr:['ANIQUILAÇÃO TOTAL.','Matéria e antimatéria se encontram. A equação: nada.']},
+   {id:'olho2',   ico:'👁️',name:'Olho de Deus',          cost:10000,res:'ee',fn:olhoDeus,                                                  xp:2000,chaos:70,ee_b:1000,narr:['O olho abre.','Eles sabem que algo os observa. Sem misericórdia.']},
+   {id:'neutron2',ico:'💠', name:'Estrela de Nêutrons',   cost:25000,res:'ee',fn:()=>applyStarType('neutron'),                              xp:5000,chaos:88,ee_b:3500,narr:['Uma estrela do tamanho de uma cidade com a massa do Sol.','Campo magnético trilhões de vezes mais forte que qualquer ímã.']}],
+  [{id:'bigbang2',ico:'🔥', name:'BIG BANG (Prestige)',   cost:100000,res:'si',fn:gPrestige,                                                xp:50000,chaos:100,ee_b:50000,narr:['O UNIVERSO RECOMEÇA. À SUA IMAGEM.','Você não morre. Você evolui.','A próxima encarnação será ainda mais poderosa.']},
+   {id:'thermal2',ico:'☠️', name:'Morte Térmica',         cost:80000, res:'si',fn:gHeatDeath,                                               xp:30000,chaos:95,ee_b:30000,narr:['A ENTROPIA VENCE.','Toda energia dissipada. O silêncio eterno chega.','O universo em equilíbrio perfeito... e mortal.']},
+   {id:'alien2',  ico:'👽', name:'Invasão Alienígena',    cost:50000, res:'si',fn:gAlienInvasion,                                            xp:20000,chaos:90,ee_b:20000,narr:['ELES CHEGARAM PARA CONSUMIR.','Não para fazer contato. Para devorar.','O universo é pequeno demais para os dois.']}]
+];
+
+const GACHS=[
+  {id:'fb',   name:'Primeiro Sangue',  cond:()=>GAME.totalDest>=1,            rew:()=>{GAME.res.cc+=100},         desc:'+100 Caos Cósmico'},
+  {id:'d5',   name:'Sistema em Chamas',cond:()=>GAME.totalDest>=5,            rew:()=>{GAME.globalMult*=1.2},     desc:'Multiplicador ×1.2'},
+  {id:'d10',  name:'Genocida Galáctico',cond:()=>GAME.totalDest>=10,          rew:()=>{GAME.res.ee+=1000},        desc:'+1000 Energia Escura'},
+  {id:'c50',  name:'Meia Destruição',  cond:()=>GAME.chaosLvl>=50,            rew:()=>{GAME.res.ee+=500},         desc:'+500 Energia Escura'},
+  {id:'bh3',  name:'Singularidade',    cond:()=>!!bhGroup,                    rew:()=>{GAME.rates.si+=0.5},       desc:'Singularidade +0.5/s'},
+  {id:'c5',   name:'Fúria em Cadeia',  cond:()=>GAME.combo>=5,                rew:()=>{GAME.res.cc+=1000},        desc:'+1000 Caos Cósmico'},
+  {id:'c10',  name:'Fúria Divina',     cond:()=>GAME.combo>=10,               rew:()=>{GAME.globalMult*=1.5},     desc:'Multiplicador ×1.5'},
+  {id:'p1',   name:'Renascimento',     cond:()=>GAME.prestigeCount>=1,        rew:()=>{GAME.globalMult*=1.3},     desc:'Multiplicador ×1.3'},
+  {id:'all',  name:'Silêncio Eterno',  cond:()=>AN.every(n=>GS[n].dd),        rew:()=>{GAME.res.si+=100},         desc:'+100 Singularidade'},
+  {id:'l5',   name:'Deus do Caos',     cond:()=>GAME.lvl>=5,                  rew:()=>{GAME.globalMult*=2},       desc:'Multiplicador ×2.0!'},
+];
+
+function gFmt(n){if(n>=1e9)return(n/1e9).toFixed(1)+'B';if(n>=1e6)return(n/1e6).toFixed(1)+'M';if(n>=1e3)return(n/1e3).toFixed(1)+'K';return Math.floor(n).toString()}
+
+function gBuildShop(){
+  GCATS.forEach((cat,ci)=>{
+    const pane=$('gC'+ci);
+    cat.forEach(ev=>{
+      const btn=document.createElement('div');
+      btn.className='gBtn';btn.id='gBtn_'+ev.id;
+      btn.innerHTML=`<div class="gBI">${ev.ico}</div><div class="gBN">${ev.name}</div><div class="gBC ${ev.res}">${gFmt(ev.cost)} ${ev.res.toUpperCase()}</div>`;
+      btn.onclick=()=>gBuy(ev);
+      pane.appendChild(btn);
+    });
+  });
+  gRefreshShop();
+}
+
+function gSetTab(i){document.querySelectorAll('.gTab').forEach((t,j)=>t.classList.toggle('act',j===i));document.querySelectorAll('.gCP').forEach((p,j)=>p.classList.toggle('act',j===i))}
+
+function gBuy(ev){
+  if(GAME.res[ev.res]<ev.cost){gBounce('g'+ev.res.toUpperCase());return}
+  const tierIdx=GCATS.findIndex(c=>c.includes(ev));
+  if(GAME.lvl<=tierIdx){toast(`🔒 Requer nível: ${GLEVELS[tierIdx]?.name||'superior'}`);return}
+  GAME.res[ev.res]-=ev.cost;
+  try{ev.fn()}catch(e){console.warn(e)}
+  const m=GAME.globalMult*(1+GAME.combo*.1);
+  const xpG=Math.round(ev.xp*m);
+  gAddXP(xpG);
+  GAME.res.cc+=Math.round(ev.cost*.05);
+  if(ev.ee_b)GAME.res.ee+=Math.round(ev.ee_b*.04*m);
+  GAME.score+=Math.round(ev.xp*m*10);
+  if(GAME.score>GAME.hiScore)GAME.hiScore=GAME.score;
+  GAME.chaosLvl=Math.min(100,GAME.chaosLvl+ev.chaos);
+  clearTimeout(GAME._comboTO);
+  GAME.combo++;
+  GAME._comboTO=setTimeout(()=>{GAME.combo=0;gHUD()},5000);
+  const cb=GAME.combo>1?` ×${GAME.combo}🔥`:'';
+  gFloat(`+${xpG} XP${cb}`,null,'#fbbf24');
+  gFloat(`+${gFmt(Math.round(ev.cost*.05))} CC`,null,'#f97316');
+  const pool=ev.narr||['O caos se propaga...'];
+  gNarrative(pool[Math.floor(Math.random()*pool.length)]);
+  gHUD();gRefreshShop();gCheckAch();gSave();
+}
+
+function gRateTick(){
+  const alive=AN.filter(n=>!GS[n].dd&&GS[n].on).length;
+  const withLife=AN.filter(n=>!GS[n].dd&&GS[n].on&&GS[n].lf).length;
+  const dest=AN.filter(n=>GS[n].dd).length;
+  const bm=GAME.globalMult;
+  GAME.rates.cc=(alive*2+withLife*10)*bm;
+  GAME.rates.ee=(dest*.5+GAME.prestigeCount*.5)*bm;
+  GAME.rates.si=((bhGroup?1:0)+GAME.rates.si*.1)*bm;
+  GAME.res.cc+=GAME.rates.cc;
+  GAME.res.ee+=GAME.rates.ee;
+  GAME.res.si+=GAME.rates.si;
+  gHUD();gRefreshShop();gCheckAch();
+}
+
+function gAddXP(a){
+  GAME.xp+=a;
+  let leveledUp=false;
+  while(GAME.lvl<GLEVELS.length&&GAME.xp>=GAME.xpNext){
+    GAME.xp-=GAME.xpNext;GAME.lvl++;
+    const ld=GLEVELS[GAME.lvl-1]||{name:'Encarnação '+GAME.prestigeCount};
+    GAME.xpNext=ld.xp||Math.round(GAME.xpNext*2.2);
+    gNarrative(`NÍVEL ${GAME.lvl}: ${ld.name.toUpperCase()}`, 'Novos poderes desbloqueados');
+    gFloat(`⬆ NÍVEL ${GAME.lvl}!`,null,'#a78bfa');
+    leveledUp=true;
+  }
+  if(GAME.lvl>=GLEVELS.length){GAME.xpNext=Math.round(GAME.xpNext*2);}
+  if(leveledUp)gRefreshShop();
+}
+
+function gHUD(){
+  const G=GAME;
+  const ld=GLEVELS[G.lvl-1]||{name:'Encarnação '+(G.prestigeCount+1)};
+  $('gLvlNum').textContent=G.lvl;
+  $('gLvlName').textContent=(G.prestigeCount>0?'👑 ':'')+ld.name;
+  const xpP=Math.min(100,(G.xp/G.xpNext)*100);
+  $('gXPFill').style.width=xpP+'%';
+  $('gXPTxt').textContent='XP '+gFmt(G.xp)+'/'+gFmt(G.xpNext);
+  $('gChaosTxt').textContent='CAOS '+G.chaosLvl.toFixed(0)+'%';
+  $('gChaosFill').style.width=G.chaosLvl+'%';
+  $('gScore').textContent=gFmt(G.score);
+  $('gHiScore').textContent='HI: '+gFmt(G.hiScore);
+  const co=$('gCombo');
+  if(G.combo>1){co.style.display='block';co.textContent='×'+G.combo+' COMBO';co.style.animation='none';co.offsetWidth;co.style.animation=''}
+  else co.style.display='none';
+  $('gCC').textContent=gFmt(Math.floor(G.res.cc));
+  $('gEE').textContent=gFmt(Math.floor(G.res.ee));
+  $('gSI').textContent=gFmt(Math.floor(G.res.si));
+  $('gCCr').textContent='+'+G.rates.cc.toFixed(1)+'/s';
+  $('gEEr').textContent='+'+G.rates.ee.toFixed(1)+'/s';
+  $('gSIr').textContent='+'+G.rates.si.toFixed(1)+'/s';
+  $('gPresCount').textContent=G.prestigeCount;
+  $('gMult').textContent='×'+G.globalMult.toFixed(1);
+  const max=$('gChaosMax'),pb=$('gPrestigeBtn');
+  if(G.chaosLvl>=100){max.classList.add('show');pb.style.display='block';$('gPrestigeInfo').textContent='Próximo mult: ×'+(G.globalMult*1.5).toFixed(1)}
+  else{max.classList.remove('show');pb.style.display='none'}
+}
+
+function gRefreshShop(){
+  GCATS.forEach((cat,ci)=>{cat.forEach(ev=>{
+    const btn=$('gBtn_'+ev.id);if(!btn)return;
+    const locked=GAME.lvl<=ci;
+    btn.classList.toggle('lk',locked);
+    btn.style.opacity=locked?'.35':GAME.res[ev.res]<ev.cost?'.65':'1';
+  })});
+}
+
+let _narrTO;
+function gNarrative(txt,sub){
+  const el=$('gNarr');
+  clearTimeout(_narrTO);
+  $('gNarrT').textContent=txt;
+  $('gNarrS').textContent=sub||'';
+  el.classList.add('show');
+  _narrTO=setTimeout(()=>el.classList.remove('show'),3600);
+}
+
+function gFloat(txt,_,color){
+  const d=document.createElement('div');
+  d.className='gFlt';d.textContent=txt;
+  d.style.cssText=`color:${color||'#f97316'};left:${30+Math.random()*100}px;top:${window.innerHeight*.55+Math.random()*50}px`;
+  document.body.appendChild(d);
+  setTimeout(()=>d.remove(),1500);
+}
+
+let _achY=10;
+function gCheckAch(){
+  GACHS.forEach(a=>{
+    if(!GAME.achEarned.has(a.id)&&a.cond()){
+      GAME.achEarned.add(a.id);a.rew();
+      const d=document.createElement('div');
+      d.className='gAch';d.style.bottom=_achY+'px';_achY+=78;
+      d.innerHTML=`<div class="gAchT">🏆 Conquista</div><div class="gAchN">${a.name}</div><div class="gAchD">${a.desc}</div>`;
+      document.body.appendChild(d);
+      setTimeout(()=>{d.remove();_achY=Math.max(10,_achY-78)},4100);
+      gHUD();
+    }
+  });
+}
+
+function gBounce(id){const el=$(id);if(!el)return;el.style.animation='none';el.offsetWidth;el.style.animation='gComboPop .18s ease 3'}
+
+function gPrestige(){
+  if(GAME.chaosLvl<100)return;
+  GAME.prestigeCount++;GAME.globalMult*=1.5;GAME.chaosLvl=0;GAME.lvl=1;GAME.xp=0;GAME.xpNext=100;GAME.combo=0;
+  cosmicEvent('bigbang');
+  gNarrative('ENCARNAÇÃO '+GAME.prestigeCount+': VOCÊ RENASCE','Multiplicador global: ×'+GAME.globalMult.toFixed(1));
+  gFloat('👑 PRESTIGE!',null,'#fbbf24');
+  gHUD();gRefreshShop();gSave();
+}
+
+function gHeatDeath(){
+  const alive=AN.filter(n=>!GS[n].dd&&GS[n].on);
+  alive.forEach((n,i)=>setTimeout(()=>desP(n),i*250));
+  gNarrative('A ENTROPIA VENCE.','O silêncio eterno chega...');
+}
+
+function gAlienInvasion(){
+  const alive=AN.filter(n=>!GS[n].dd&&GS[n].on);
+  alive.forEach((n,i)=>setTimeout(()=>{if(!GS[n].dd)desP(n)},i*180));
+  gNarrative('ELES CHEGARAM PARA CONSUMIR.','Planeta por planeta. Nada sobrevive.');
+}
+
+function gOnDestroy(n){
+  GAME.totalDest++;
+  const g=GAME.globalMult*(1+GAME.combo*.1);
+  GAME.res.ee+=Math.round(50*g);
+  GAME.score+=Math.round(500*g);
+  if(GAME.score>GAME.hiScore)GAME.hiScore=GAME.score;
+  gFloat(`💥 +${gFmt(Math.round(50*g))} EE`,null,'#a78bfa');
+  gCheckAch();gHUD();
+}
+
+function gSave(){try{localStorage.setItem('deusCaos',JSON.stringify({...GAME,achEarned:[...GAME.achEarned]}))}catch(e){}}
+function gLoad(){try{const s=localStorage.getItem('deusCaos');if(s){const d=JSON.parse(s);Object.assign(GAME,d);GAME.achEarned=new Set(d.achEarned||[]);GAME.rates={cc:0,ee:0,si:0}}}catch(e){}}
+
+// Init
+setTimeout(()=>{
+  gLoad();gBuildShop();gHUD();
+  setInterval(gRateTick,1000);
+  toast('⚡ Deus do Caos desperta...');
+  setTimeout(()=>gNarrative('Você desperta no vácuo entre as estrelas.','O sistema solar é seu brinquedo. Destrua.'),1800);
+},600);
 </script>
 </body>
 </html>
